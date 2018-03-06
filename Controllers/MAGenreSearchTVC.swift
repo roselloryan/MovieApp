@@ -58,18 +58,7 @@ class MAGenreSearchTVC: UITableViewController {
 
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-//        if segue.identifier == Constants.Identifiers.MovieCollectionViewSegue {
-//            if let destinationVC = segue.destination as? MAMovieCollectionVC {
-//                if let selectedIndexPath = tableView.indexPathForSelectedRow {
-//                    destinationVC.genre = (tableView.cellForRow(at: selectedIndexPath) as! MAGenreTableViewCell).genreModel
-//                }
-//            }
-//            else {
-//                fatalError("Not casting destinationVC in \(#function)")
-//            }
-//        }
+        
         if segue.identifier == Constants.Identifiers.MovieCollectionViewSegue {
             if let destinationVC = segue.destination as? MAMoviesVC {
                 if let selectedIndexPath = tableView.indexPathForSelectedRow {

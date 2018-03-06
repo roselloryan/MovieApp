@@ -21,7 +21,7 @@ class MADataStore: NSObject {
         
         if mediaFormat == .movie {
             if moviesParams != params || !moviesParams.isEmpty {
-                movies.removeAll()
+                movies = []
                 moviesParams = params
             }
         }

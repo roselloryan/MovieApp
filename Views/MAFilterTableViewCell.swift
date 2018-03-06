@@ -10,7 +10,11 @@ import UIKit
 
 class MAFilterTableViewCell: UITableViewCell {
     
-    
+    var sortBy: SortBy! {
+        didSet {
+            updateTextLabel()
+        }
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -21,6 +25,12 @@ class MAFilterTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
+    }
+    
+    private func updateTextLabel() {
+        DispatchQueue.main.async { [unowned self] in
+            self.textLabel?.text = self.sortBy.rawValue
+        }
     }
 
 }

@@ -13,8 +13,8 @@
 		1B1E078520448FFE00ADCDB5 /* MovieAppSlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B1E078420448FFE00ADCDB5 /* MovieAppSlowTests.swift */; };
 		1B1E078D204603DB00ADCDB5 /* MAMovieModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B1E078C204603DB00ADCDB5 /* MAMovieModel.swift */; };
 		1B1E078F2046114900ADCDB5 /* MediaFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B1E078E2046114900ADCDB5 /* MediaFormat.swift */; };
-		1B1E0791204619B000ADCDB5 /* MAMovieCollectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B1E0790204619B000ADCDB5 /* MAMovieCollectionVC.swift */; };
 		1B1E07932046200A00ADCDB5 /* MAMovieCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B1E07922046200A00ADCDB5 /* MAMovieCollectionViewCell.swift */; };
+		1B2E2F8B204DBD5100FA4D6B /* SortBy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2E2F8A204DBD5100FA4D6B /* SortBy.swift */; };
 		1BD15C5B204A1610000255AE /* MAFiltersTableVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD15C5A204A1610000255AE /* MAFiltersTableVC.swift */; };
 		1BD15C5D204A1BC9000255AE /* MAFilterTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD15C5C204A1BC9000255AE /* MAFilterTableViewCell.swift */; };
 		1BD15C5F204A2BFC000255AE /* MAMoviesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD15C5E204A2BFC000255AE /* MAMoviesVC.swift */; };
@@ -63,8 +63,8 @@
 		1B1E078620448FFE00ADCDB5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1B1E078C204603DB00ADCDB5 /* MAMovieModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMovieModel.swift; sourceTree = "<group>"; };
 		1B1E078E2046114900ADCDB5 /* MediaFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFormat.swift; sourceTree = "<group>"; };
-		1B1E0790204619B000ADCDB5 /* MAMovieCollectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMovieCollectionVC.swift; sourceTree = "<group>"; };
 		1B1E07922046200A00ADCDB5 /* MAMovieCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMovieCollectionViewCell.swift; sourceTree = "<group>"; };
+		1B2E2F8A204DBD5100FA4D6B /* SortBy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortBy.swift; sourceTree = "<group>"; };
 		1BD15C5A204A1610000255AE /* MAFiltersTableVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAFiltersTableVC.swift; sourceTree = "<group>"; };
 		1BD15C5C204A1BC9000255AE /* MAFilterTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAFilterTableViewCell.swift; sourceTree = "<group>"; };
 		1BD15C5E204A2BFC000255AE /* MAMoviesVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMoviesVC.swift; sourceTree = "<group>"; };
@@ -135,6 +135,7 @@
 				1B1E0779203CAE3200ADCDB5 /* MAGenreModel.swift */,
 				1B1E078C204603DB00ADCDB5 /* MAMovieModel.swift */,
 				1B1E078E2046114900ADCDB5 /* MediaFormat.swift */,
+				1B2E2F8A204DBD5100FA4D6B /* SortBy.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -218,9 +219,8 @@
 			isa = PBXGroup;
 			children = (
 				1BF7B5B42036561500068561 /* MAGenreSearchTVC.swift */,
-				1B1E0790204619B000ADCDB5 /* MAMovieCollectionVC.swift */,
-				1BD15C5A204A1610000255AE /* MAFiltersTableVC.swift */,
 				1BD15C5E204A2BFC000255AE /* MAMoviesVC.swift */,
+				1BD15C5A204A1610000255AE /* MAFiltersTableVC.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -398,6 +398,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1B2E2F8B204DBD5100FA4D6B /* SortBy.swift in Sources */,
 				1BD15C5B204A1610000255AE /* MAFiltersTableVC.swift in Sources */,
 				1BF7B5B52036561500068561 /* MAGenreSearchTVC.swift in Sources */,
 				1BF7B5BB2037589B00068561 /* MADataStore.swift in Sources */,
@@ -412,7 +413,6 @@
 				1BF7B5B92036A5D300068561 /* MAConstants.swift in Sources */,
 				1BD15C5D204A1BC9000255AE /* MAFilterTableViewCell.swift in Sources */,
 				1B1E078F2046114900ADCDB5 /* MediaFormat.swift in Sources */,
-				1B1E0791204619B000ADCDB5 /* MAMovieCollectionVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

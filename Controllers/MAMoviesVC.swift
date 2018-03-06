@@ -23,6 +23,8 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
         
         
         addRightBarButtonsToNavBar()
+        disableFilterTableViewUI(animated: false)
+        
         askDataStoreToCallForMoviesIfEmptyOrParamsChanged()
         
         collectionView.delegate = self
@@ -49,13 +51,6 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     deinit {
         print("I'm melting... i'm melting...")
     }
-    
-    // MARK: - Navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
-    }
-    
     
     // MARK: UICollectionViewDataSource
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -91,21 +86,6 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
      }
      */
     
-    /*
-     // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-     override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-     return false
-     }
-     
-     override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-     return false
-     }
-     
-     override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-     
-     }
-     */
-    
     
     // MARK: - Movie Data Store Related Methods
     
@@ -123,8 +103,12 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
                          Constants.TMDB.Parameters.IncludeVideo: Constants.TMDB.Values.False,
                          Constants.TMDB.Parameters.Page: Constants.TMDB.Values.One,
                          Constants.TMDB.Parameters.SortBy: Constants.TMDB.Values.PopularityDesc,
-                         Constants.TMDB.Parameters.PrimaryReleaseYear: Constants.TMDB.CurrentYear,
+                         Constants.TMDB.Parameters.PrimaryReleaseDateLessThan: Constants.TMDB.CurrentDate,
                          Constants.TMDB.Parameters.WithGenres: String(genre.id)]
+        
+        // TODO: change primary release year to current date
+        print(Constants.TMDB.CurrentDate)
+        
         
         return paramDict
     }
@@ -209,6 +193,13 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
         }
     }
     
+    
+    // MARK: - Navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using [segue destinationViewController].
+        // Pass the selected object to the new view controller.
+    }
+    
     // MARK: - Navigation bar methods
     func addRightBarButtonsToNavBar() {
         let rightSearchBarButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(searchButtonTapped))
@@ -225,7 +216,70 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     
     @objc func filterButtonTapped(_ barButton: UIBarButtonItem) {
         print("Filter Button tapped in Movie Collectoin VC")
+        
+        toggleFilterTableViewUI()
 
+    }
+    
+    // MARK: Filter UI Methods
+    
+    @objc func toggleFilterTableViewUI() {
+        if filtersContainerView.isUserInteractionEnabled {
+            disableFilterTableViewUI(animated: true)
+            undimCollectionView()
+            collectionView.isScrollEnabled = true
+        }
+        else {
+            enableFilterTableViewUIUpdates()
+            dimCollectionView()
+            collectionView.isScrollEnabled = false
+        }
+    }
+    
+    func enableFilterTableViewUIUpdates() {
+        UIView.animate(withDuration: 0.2, animations: { [unowned self] in
+            self.filtersContainerView.alpha = 1
+            // TODO: shade and disable collection view
+        })
+        filtersContainerView.isUserInteractionEnabled = true
+    }
+    
+    func disableFilterTableViewUI(animated: Bool) {
+        UIView.animate(withDuration: animated ? 0.2 : 0.0, animations: { [unowned self] in
+            self.filtersContainerView.alpha = 0
+            // TODO: un-shade and enable collection view
+        })
+        filtersContainerView.isUserInteractionEnabled = false
+    }
+    
+    func dimCollectionView() {
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleFilterTableViewUI))
+        
+        let dimView = UIView.init(frame: collectionView.bounds)
+        dimView.backgroundColor = .black
+        dimView.alpha = 0.0
+        dimView.tag = 1
+        dimView.addGestureRecognizer(tapGestureRecognizer)
+        collectionView.addSubview(dimView)
+        
+        UIView.animate(withDuration: 0.2) {
+            dimView.alpha = 0.6
+        }
+    }
+
+    func undimCollectionView() {
+        
+        for subview in collectionView.subviews {
+            if subview.tag == 1 {
+                UIView.animate(withDuration: 0.2, animations: {
+                    subview.alpha = 0.0
+                }, completion: { (complete) in
+                    subview.removeFromSuperview()
+                })
+                break
+            }
+        }
     }
     
 }
@@ -241,7 +295,7 @@ extension MAMoviesVC: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets.init(top: 0.0, left: Constants.Dimensions.CollectionViewMovieCellInset, bottom: 0.0, right: Constants.Dimensions.CollectionViewMovieCellInset)
+        return Constants.Dimensions.CollectionViewMovieEdgeInsets
     }
 }
 

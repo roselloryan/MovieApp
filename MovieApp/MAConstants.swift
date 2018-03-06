@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 import CoreGraphics
 
 struct Constants {
@@ -37,13 +38,24 @@ struct Constants {
             static let PrimaryReleaseYear = "primary_release_year"
             static let WithGenres = "with_genres"
             static let Page = "page"
+            static let PrimaryReleaseDateLessThan = "primary_release_date.lte"
+            static let PrimaryReleaseDateGreaterThan = "primary_release_date.gte"
         }
         
         struct Values {
             static let English = "en-US"
-            static let PopularityDesc = "popularity.desc"
+            
             static let False = "false"
             static let One = "1"
+            
+            static let PopularityAsc = "popularity.asc"
+            static let PopularityDesc = "popularity.desc"
+            static let PrimaryReleaseDateAsc = "primary_release_date.asc"
+            static let PrimaryReleaseDateDesc = "primary_release_date.desc"
+            static let AverageVoteAsc = "vote_average.asc"
+            static let AverageVoteDesc = "vote_average.desc"
+            static let OriginalTitleAsc = "original_title.asc"
+            static let OriginalTitleDesc = "original_title.desc"
         }
         
         struct FileSizes {
@@ -56,15 +68,24 @@ struct Constants {
         static var SecureBaseImageUrl: String? = nil
         static var BackdropSize: String? = nil
         
-        // Miscelaneous
+        // Miscelaneous Date
         static let CurrentYear = String(Calendar.current.component(.year, from: Date()))
+        
+        static var CurrentDate: String {
+            get {
+                let now = Date()
+                let formatter = ISO8601DateFormatter()
+                formatter.formatOptions = [.withFullDate]
+                let dateString = formatter.string(from: now)
+                return dateString
+            }
+        }
+
         
         static func isoDateStringForYear(_ year: Int) -> String {
             return "\(year)-01-01"
         }
     }
-    
-
     
     
     struct TMDBDictKeys {
@@ -113,11 +134,14 @@ struct Constants {
     struct Dimensions {
         static var TableViewCellHeight: CGFloat? = nil
         
-        static var CollectionViewMovieCellInset: CGFloat = 8.0
+        static var CollectionViewMovieCellSpacing: CGFloat = 8.0
+        static var CollectionViewMovieEdgeInsets =  UIEdgeInsets.init(top: 0.0, left: Constants.Dimensions.CollectionViewMovieCellSpacing, bottom: 0.0, right: Constants.Dimensions.CollectionViewMovieCellSpacing)
+        
         static var CollectionViewMovieCellWidth: CGFloat? = nil
         static var CollectionViewMovieCellHeight: CGFloat? = nil
-        static var CollectionViewMovieCellSize = CGSize.init(width: Constants.Dimensions.CollectionViewMovieCellWidth ?? 20.0, height: Constants.Dimensions.CollectionViewMovieCellHeight ?? 20.0)
         
+        static var CollectionViewMovieCellSize = CGSize.init(width: Constants.Dimensions.CollectionViewMovieCellWidth ?? 20.0, height: Constants.Dimensions.CollectionViewMovieCellHeight ?? 20.0)
+
         
         static func calculateDimensionsFromDeviceFrame(_ frame: CGRect) {
             let h = max(frame.height, frame.width)
@@ -125,22 +149,26 @@ struct Constants {
             
             Constants.Dimensions.TableViewCellHeight = h / 4
             
-            Constants.Dimensions.CollectionViewMovieCellWidth = (w - 4.0 * Constants.Dimensions.CollectionViewMovieCellInset) / 3.0
+            Constants.Dimensions.CollectionViewMovieCellWidth = (w - 4.0 * Constants.Dimensions.CollectionViewMovieCellSpacing) / 3.0
             Constants.Dimensions.CollectionViewMovieCellHeight = Constants.Dimensions.CollectionViewMovieCellWidth! * 1.51
-            
         }
         
-        // TODO: Add collection view edge insets
     }
     
     struct Identifiers {
         static let MovieCollectionViewCell = "MovieCollectionViewCell"
         static let GenreTableViewCell = "GenreCell"
+        
         static let MovieCollectionViewSegue = "MovieCollectionViewSegue"
         static let MovieFiltersSegue = "MovieFilterSegue"
         
-        static let MainStoryboardName = "Main"
         static let FilterTableVC = "FilterTableViewController"
+        static let FilterTableViewCell = "FilterTableViewCell"
+    }
+    
+    struct Filter {
+        static let MovieSections = ["Sort by:", "Filters:"]
+        static let SortByEnums: [SortBy] = [.popularityDesc, .popularityAsc, .averageVoteDesc, .averageVoteAsc, .titleAsc, .titleDesc]
     }
     
 }
