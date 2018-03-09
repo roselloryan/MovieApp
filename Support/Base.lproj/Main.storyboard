@@ -75,26 +75,25 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="Php-ny-tSy">
                         <rect key="frame" x="0.0" y="0.0" width="250" height="501"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <inset key="separatorInset" minX="8" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="FilterTableViewCell" textLabel="cKK-Mu-GPL" style="IBUITableViewCellStyleDefault" id="vai-sa-abl" customClass="MAFilterTableViewCell" customModule="MovieApp" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="FilterTableViewCell" textLabel="cKK-Mu-GPL" style="IBUITableViewCellStyleDefault" id="vai-sa-abl" customClass="MAFilterTableViewCell" customModule="MovieApp" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="250" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="vai-sa-abl" id="lj5-NW-tIg">
-                                    <rect key="frame" x="0.0" y="0.0" width="216" height="43.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="250" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Hello, world." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="cKK-Mu-GPL">
-                                            <rect key="frame" x="15" y="0.0" width="200" height="43.5"/>
+                                            <rect key="frame" x="15" y="0.0" width="219" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <fontDescription key="fontDescription" type="system" weight="thin" pointSize="17"/>
                                             <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -105,7 +104,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xjh-H8-qZJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3573" y="636"/>
+            <point key="canvasLocation" x="3572.8000000000002" y="635.53223388305855"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="RBe-0H-2sH">
@@ -202,6 +201,7 @@
                             </collectionView>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="p0Y-GR-Vq3">
                                 <rect key="frame" x="117" y="64" width="250" height="501"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
                                     <segue destination="d4t-ER-42J" kind="embed" id="cem-3q-Vir"/>
                                 </connections>

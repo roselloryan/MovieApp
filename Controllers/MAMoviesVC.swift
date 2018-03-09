@@ -106,10 +106,6 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
                          Constants.TMDB.Parameters.PrimaryReleaseDateLessThan: Constants.TMDB.CurrentDate,
                          Constants.TMDB.Parameters.WithGenres: String(genre.id)]
         
-        // TODO: change primary release year to current date
-        print(Constants.TMDB.CurrentDate)
-        
-        
         return paramDict
     }
     

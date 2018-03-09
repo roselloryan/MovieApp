@@ -40,6 +40,7 @@ struct Constants {
             static let Page = "page"
             static let PrimaryReleaseDateLessThan = "primary_release_date.lte"
             static let PrimaryReleaseDateGreaterThan = "primary_release_date.gte"
+            static let VoteAverageGreaterThan = "vote_average.gte"
         }
         
         struct Values {
@@ -128,6 +129,10 @@ struct Constants {
     
     struct ImageNames {
         static let Placeholder = "placeholder"
+        static let Unselected = "canvas1"
+        static let Selected = "canvas2"
+        static let DownChevron = "canvas3"
+        static let UpChevron = "canvas4"
     }
     
     
@@ -169,6 +174,14 @@ struct Constants {
     struct Filter {
         static let MovieSections = ["Sort by:", "Filters:"]
         static let SortByEnums: [SortBy] = [.popularityDesc, .popularityAsc, .averageVoteDesc, .averageVoteAsc, .titleAsc, .titleDesc]
+        static let FilterTypes: [FilterType] = [.language, .avgVoteGreaterThan] // [.releaseYear, .newerThanYear, .olderThanYear, .language]
+        static let Languages: [Language] = [.english, .spanish] // TODO: Add more languages
+        static let Ratings: [Rating] = [.zeroStars, .oneStar, .twoStars, .threeStars, .fourStars, .fiveStars]
+    }
+    
+    struct LanguageCodes {
+        static let English = "en"
+        static let Spanish = "es"
     }
     
 }
