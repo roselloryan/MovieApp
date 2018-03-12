@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -78,22 +79,37 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="FilterTableViewCell" textLabel="cKK-Mu-GPL" style="IBUITableViewCellStyleDefault" id="vai-sa-abl" customClass="MAFilterTableViewCell" customModule="MovieApp" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="FilterTableViewCell" id="vai-sa-abl" customClass="MAFilterTableViewCell" customModule="MovieApp" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="250" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="vai-sa-abl" id="lj5-NW-tIg">
                                     <rect key="frame" x="0.0" y="0.0" width="250" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Hello, world." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="cKK-Mu-GPL">
-                                            <rect key="frame" x="15" y="0.0" width="219" height="43.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" weight="thin" pointSize="17"/>
-                                            <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ny0-hO-MO7" userLabel="titleImageView">
+                                            <rect key="frame" x="8" y="8" width="135.5" height="27.5"/>
+                                        </imageView>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5tx-Hh-Slv" userLabel="cellStateImageView">
+                                            <rect key="frame" x="214.5" y="8" width="27.5" height="27.5"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" secondItem="5tx-Hh-Slv" secondAttribute="height" multiplier="1:1" id="yGc-Z8-GLR"/>
+                                            </constraints>
+                                        </imageView>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="leading" secondItem="Ny0-hO-MO7" secondAttribute="leading" constant="-16" id="BfA-As-B2u"/>
+                                        <constraint firstItem="Ny0-hO-MO7" firstAttribute="top" secondItem="lj5-NW-tIg" secondAttribute="top" constant="8" id="IT3-iD-Z6M"/>
+                                        <constraint firstItem="Ny0-hO-MO7" firstAttribute="bottom" secondItem="lj5-NW-tIg" secondAttribute="bottom" constant="-8" id="LqR-Y7-Uy5"/>
+                                        <constraint firstItem="5tx-Hh-Slv" firstAttribute="top" secondItem="lj5-NW-tIg" secondAttribute="top" constant="8" id="MSg-Ik-qxA"/>
+                                        <constraint firstItem="Ny0-hO-MO7" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="5tx-Hh-Slv" secondAttribute="trailing" id="No2-uw-LIL"/>
+                                        <constraint firstAttribute="bottom" secondItem="5tx-Hh-Slv" secondAttribute="bottom" constant="8" id="V9a-05-mWD"/>
+                                        <constraint firstAttribute="trailing" secondItem="5tx-Hh-Slv" secondAttribute="trailing" constant="8" id="iJH-MU-S9q"/>
+                                    </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="cellStateImageView" destination="5tx-Hh-Slv" id="e0U-Kn-i3A"/>
+                                    <outlet property="titleImageView" destination="Ny0-hO-MO7" id="ML7-E8-vGS"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>

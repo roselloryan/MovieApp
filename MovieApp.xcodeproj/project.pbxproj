@@ -18,7 +18,7 @@
 		1B2E2F8D204F748D00FA4D6B /* FIlters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2E2F8C204F748D00FA4D6B /* FIlters.swift */; };
 		1B2E2F8F20508C4700FA4D6B /* FilterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2E2F8E20508C4700FA4D6B /* FilterType.swift */; };
 		1B2E2F912050C5DC00FA4D6B /* Language.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2E2F902050C5DC00FA4D6B /* Language.swift */; };
-		1BBD79ED2052294F004B60A9 /* Ratings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BBD79EC2052294F004B60A9 /* Ratings.swift */; };
+		1BBD79ED2052294F004B60A9 /* Rating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BBD79EC2052294F004B60A9 /* Rating.swift */; };
 		1BD15C5B204A1610000255AE /* MAFiltersTableVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD15C5A204A1610000255AE /* MAFiltersTableVC.swift */; };
 		1BD15C5D204A1BC9000255AE /* MAFilterTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD15C5C204A1BC9000255AE /* MAFilterTableViewCell.swift */; };
 		1BD15C5F204A2BFC000255AE /* MAMoviesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD15C5E204A2BFC000255AE /* MAMoviesVC.swift */; };
@@ -72,7 +72,7 @@
 		1B2E2F8C204F748D00FA4D6B /* FIlters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIlters.swift; sourceTree = "<group>"; };
 		1B2E2F8E20508C4700FA4D6B /* FilterType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterType.swift; sourceTree = "<group>"; };
 		1B2E2F902050C5DC00FA4D6B /* Language.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Language.swift; sourceTree = "<group>"; };
-		1BBD79EC2052294F004B60A9 /* Ratings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ratings.swift; sourceTree = "<group>"; };
+		1BBD79EC2052294F004B60A9 /* Rating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rating.swift; sourceTree = "<group>"; };
 		1BD15C5A204A1610000255AE /* MAFiltersTableVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAFiltersTableVC.swift; sourceTree = "<group>"; };
 		1BD15C5C204A1BC9000255AE /* MAFilterTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAFilterTableViewCell.swift; sourceTree = "<group>"; };
 		1BD15C5E204A2BFC000255AE /* MAMoviesVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMoviesVC.swift; sourceTree = "<group>"; };
@@ -147,7 +147,7 @@
 				1B2E2F8C204F748D00FA4D6B /* FIlters.swift */,
 				1B2E2F8E20508C4700FA4D6B /* FilterType.swift */,
 				1B2E2F902050C5DC00FA4D6B /* Language.swift */,
-				1BBD79EC2052294F004B60A9 /* Ratings.swift */,
+				1BBD79EC2052294F004B60A9 /* Rating.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -427,7 +427,7 @@
 				1BF7B585203651AD00068561 /* AppDelegate.swift in Sources */,
 				1BF7B5B92036A5D300068561 /* MAConstants.swift in Sources */,
 				1BD15C5D204A1BC9000255AE /* MAFilterTableViewCell.swift in Sources */,
-				1BBD79ED2052294F004B60A9 /* Ratings.swift in Sources */,
+				1BBD79ED2052294F004B60A9 /* Rating.swift in Sources */,
 				1B1E078F2046114900ADCDB5 /* MediaFormat.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

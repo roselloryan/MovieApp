@@ -17,6 +17,9 @@ enum CellState {
 
 class MAFilterTableViewCell: UITableViewCell {
     
+    @IBOutlet weak var titleImageView: UIImageView!
+    @IBOutlet weak var cellStateImageView: UIImageView!
+    
     var sortBy: SortBy? {
         didSet {
             if sortBy != nil {
@@ -41,6 +44,15 @@ class MAFilterTableViewCell: UITableViewCell {
             }
         }
     }
+    var rating: Rating? {
+        didSet {
+            if rating != nil {
+                nullifyPropertiesExceptRating()
+                updateTextLabel()
+                updateCellForRating()
+            }
+        }
+    }
     var cellState: CellState! {
         didSet {
             updateAccessoryImage()
@@ -53,12 +65,40 @@ class MAFilterTableViewCell: UITableViewCell {
         // Initialization code
         
         self.backgroundColor = .clear
+        self.textLabel?.textColor = .white
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         // Configure the view for the selected state
     }
+    
+    private func updateCellForRating() {
+        
+        guard let rating = rating else { fatalError("No rating but trying to update ui in cell \(#function)") }
+        
+        var photoName: String!
+        
+        switch rating {
+        case .zeroStars:
+            photoName = Constants.ImageNames.ZeroStarsAndUp
+        case .oneStar:
+            photoName = Constants.ImageNames.OneStarsAndUp
+        case .twoStars:
+            photoName = Constants.ImageNames.TwoStarsAndUp
+        case .threeStars:
+            photoName = Constants.ImageNames.ThreeStarsAndUp
+        case .fourStars:
+            photoName = Constants.ImageNames.FourStarsAndUp
+        case .fiveStars:
+            photoName = Constants.ImageNames.FiveStarsOnly
+        }
+        
+        DispatchQueue.main.async {
+            self.titleImageView?.image = UIImage(named: photoName)
+        }
+    }
+    
     
     private func updateAccessoryImage() {
       
@@ -78,11 +118,12 @@ class MAFilterTableViewCell: UITableViewCell {
         }
         
         DispatchQueue.main.async { [unowned self] in
-            self.accessoryView = UIImageView(image: UIImage(named: imageName))
+            self.cellStateImageView.image = UIImage(named: imageName)
         }
     }
     
     private func updateTextLabel() {
+        
         let text: String!
         if let sortBy = self.sortBy {
             text = sortBy.rawValue
@@ -93,27 +134,41 @@ class MAFilterTableViewCell: UITableViewCell {
         else if let language = self.language {
             text = language.rawValue
         }
+        else if rating != nil {
+            text = ""
+        }
         else {
             text = "Something wrong in the world\n \(#function)"
         }
         
         DispatchQueue.main.async { [unowned self] in
+            self.titleImageView.image = nil
             self.textLabel?.text = text
         }
     }
     
     private func nullifyPropertiesExceptFilter() {
         language = nil
+        rating = nil
         sortBy = nil
     }
     
+    private func nullifyPropertiesExceptLanguage() {
+        filter = nil
+        rating = nil
+        sortBy = nil
+    }
+
+    private func nullifyPropertiesExceptRating() {
+        filter = nil
+        language = nil
+        sortBy = nil
+    }
+
     private func nullifyPropertiesExceptSortby() {
         filter = nil
         language = nil
-    }
-    private func nullifyPropertiesExceptLanguage() {
-        filter = nil
-        sortBy = nil
+        rating = nil
     }
 
 }

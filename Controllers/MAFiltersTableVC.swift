@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 enum FilterSections: Int {
     case sortBy = 0
     case filter
@@ -28,6 +29,7 @@ class MAFiltersTableVC: UITableViewController {
     var languageSelected = Language.english
     
     var ratingsFilterSelected = false
+    var ratingSelected = Rating.zeroStars
     
     var releaseYearFilterSelected = false
     
@@ -39,6 +41,8 @@ class MAFiltersTableVC: UITableViewController {
 
         tableView.layer.borderWidth = 0.25
         tableView.layer.borderColor = UIColor.white.cgColor
+        
+        tableView.rowHeight = 40
     }
 
     override func didReceiveMemoryWarning() {
@@ -63,7 +67,7 @@ class MAFiltersTableVC: UITableViewController {
             let total = filterTypes.count
             
             let languageCellsCount = languageFilterSelected ? languages.count : 0
-            let ratingsCellsCount = ratingsFilterSelected ? 6 : 0
+            let ratingsCellsCount = ratingsFilterSelected ? ratings.count : 0
             
             
             return total + languageCellsCount + ratingsCellsCount
@@ -95,9 +99,26 @@ class MAFiltersTableVC: UITableViewController {
                     cell.cellState = .pointingDown
                 }
                 else if indexPath.row > languages.count + 1 && indexPath.row <= languages.count + 1 + ratings.count {
-                    cell.textLabel?.text = "This should be ratings cell languageFilter not selected"
-                }
+                    
+                    switch indexPath.row {
+                    case languages.count + 2:
+                        cell.rating = .zeroStars
+                    case languages.count + 3:
+                        cell.rating = .oneStar
+                    case languages.count + 4:
+                        cell.rating = .twoStars
+                    case languages.count + 5:
+                        cell.rating = .threeStars
+                    case languages.count + 6:
+                        cell.rating = .fourStars
+                    case languages.count + 7:
+                        cell.rating = .fiveStars
+                    default:
+                        fatalError("more ratings cells than expected")
+                    }
             
+                    cell.cellState = cell.rating! == ratingSelected ? .selected : .unselected
+                }
             }
             else if !languageFilterSelected {
                 if indexPath.row == 1 {
@@ -105,11 +126,29 @@ class MAFiltersTableVC: UITableViewController {
                     cell.cellState = .pointingDown
                 }
                 if indexPath.row > 1 && indexPath.row < 8 {
-                    cell.textLabel?.text = "This should be ratings cell"
+                    cell.rating = .zeroStars
+                    cell.cellState = .unselected
+                    switch indexPath.row {
+                    case 2:
+                        cell.rating = .zeroStars
+                    case 3:
+                        cell.rating = .oneStar
+                    case 4:
+                        cell.rating = .twoStars
+                    case 5:
+                        cell.rating = .threeStars
+                    case 6:
+                        cell.rating = .fourStars
+                    case 7:
+                        cell.rating = .fiveStars
+                    default:
+                        fatalError("more ratings cells than expected")
+                    }
+                    
+                    cell.cellState = cell.rating! == ratingSelected ? .selected : .unselected
                 }
             }
         
-
         default:
             fatalError("too many sections in filterTVC \(#function)\n\(#line)")
         }
@@ -121,6 +160,14 @@ class MAFiltersTableVC: UITableViewController {
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return Constants.Filter.MovieSections[section]
     }
+    
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        let headerView = view as! UITableViewHeaderFooterView
+        headerView.contentView.backgroundColor = UIColor.black
+        headerView.textLabel?.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        headerView.textLabel?.textColor = .lightText
+        headerView.detailTextLabel?.textColor = .lightText
+        }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("section: \(indexPath.section) row: \(indexPath.row)")
@@ -174,10 +221,19 @@ class MAFiltersTableVC: UITableViewController {
                 }
             }
         }
-
-        
        
         tableView.deselectRow(at: indexPath, animated: false)
+    }
+    
+    func scrollToLastCell() {
+        var total = filterTypes.count - 1
+        
+        let languageCellsCount = languageFilterSelected ? languages.count : 0
+        let ratingsCellsCount = ratingsFilterSelected ? ratings.count : 0
+        
+        total = total + languageCellsCount + ratingsCellsCount
+        
+        tableView.scrollToRow(at: IndexPath(row: total, section: 1), at: .top, animated: true)
     }
     
     func thisRatingsCellTapped(_ cell: MAFilterTableViewCell) {
@@ -185,11 +241,9 @@ class MAFiltersTableVC: UITableViewController {
         ratingsFilterSelected = !ratingsFilterSelected
         
         if ratingsFilterSelected {
-            // Insert ratings cells
             insertRatingsCells()
         }
         else {
-            // remove ratings cells
             deleteRatingsCells()
         }
     }
@@ -201,7 +255,17 @@ class MAFiltersTableVC: UITableViewController {
         for i in 0..<6 {
             indexPathsToInsert.append(IndexPath.init(row: i + offset, section: FilterSections.filter.rawValue))
         }
+        
+        // TODO: clean this up in to single method
+        CATransaction.begin()
+        tableView.beginUpdates()
+        CATransaction.setCompletionBlock { [unowned self] in
+            // Code to be executed upon completion
+            self.scrollToLastCell()
+        }
         tableView.insertRows(at: indexPathsToInsert, with: .automatic)
+        tableView.endUpdates()
+        CATransaction.commit()
     }
     
     func deleteRatingsCells() {
@@ -221,7 +285,16 @@ class MAFiltersTableVC: UITableViewController {
             indexPathsToInsert.append(IndexPath(row: i + 1, section: 1))
         }
         
+        // TODO: clean this up in to single method
+        CATransaction.begin()
+        tableView.beginUpdates()
+        CATransaction.setCompletionBlock { [unowned self] in
+            // Code to be executed upon completion
+            self.scrollToLastCell()
+        }
         tableView.insertRows(at: indexPathsToInsert, with: .automatic)
+        tableView.endUpdates()
+        CATransaction.commit()
     }
     
     func removeLanguagesCells() {
@@ -232,14 +305,6 @@ class MAFiltersTableVC: UITableViewController {
         }
         
         tableView.deleteRows(at: indexPathsToDelete, with: .automatic)
-    }
-    
-    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        let headerView = view as! UITableViewHeaderFooterView
-        headerView.contentView.backgroundColor = UIColor.black
-        headerView.textLabel?.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        headerView.textLabel?.textColor = .lightText
-        headerView.detailTextLabel?.textColor = .lightText
     }
     
     // MARK: - Custom Table View methods
@@ -259,12 +324,12 @@ class MAFiltersTableVC: UITableViewController {
     func configureSortByForCell(_ cell: MAFilterTableViewCell, atIndextPath indexPath: IndexPath) {
         if !sortBySelected {
             cell.sortBy = currentSortByFromParentParamDict() ?? sortByEnums.first!
-            cell.accessoryView = UIImageView(image: UIImage(named: Constants.ImageNames.DownChevron))
+            cell.cellState = .pointingDown
         }
         else {
-            let sortBy = Constants.Filter.SortByEnums[indexPath.row]
+            let sortBy = sortByEnums[indexPath.row]
             cell.sortBy = sortBy
-            cell.accessoryView =  UIImageView(image: UIImage(named: currentSortByFromParentParamDict() == sortBy ? Constants.ImageNames.Selected : Constants.ImageNames.Unselected))
+            cell.cellState = sortBy == currentSortByFromParentParamDict() ? .selected : .unselected
         }
     }
     

@@ -133,6 +133,13 @@ struct Constants {
         static let Selected = "canvas2"
         static let DownChevron = "canvas3"
         static let UpChevron = "canvas4"
+        static let ZeroStarsAndUp = "canvas5"
+        static let OneStarsAndUp = "canvas6"
+        static let TwoStarsAndUp = "canvas7"
+        static let ThreeStarsAndUp = "canvas8"
+        static let FourStarsAndUp = "canvas9"
+        static let FiveStarsOnly = "canvas10"
+        
     }
     
     

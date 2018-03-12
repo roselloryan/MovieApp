@@ -235,7 +235,6 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     func enableFilterTableViewUIUpdates() {
         UIView.animate(withDuration: 0.2, animations: { [unowned self] in
             self.filtersContainerView.alpha = 1
-            // TODO: shade and disable collection view
         })
         filtersContainerView.isUserInteractionEnabled = true
     }
@@ -243,7 +242,6 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     func disableFilterTableViewUI(animated: Bool) {
         UIView.animate(withDuration: animated ? 0.2 : 0.0, animations: { [unowned self] in
             self.filtersContainerView.alpha = 0
-            // TODO: un-shade and enable collection view
         })
         filtersContainerView.isUserInteractionEnabled = false
     }
