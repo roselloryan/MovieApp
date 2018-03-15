@@ -13,6 +13,8 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     var genre: MAGenreModel!
     lazy var filterParamDict: Dictionary<String, String> = defaultFilterParametersDictionary()
     
+    var resultsPage = 1
+    
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var filtersContainerView: UIView!
     
@@ -290,6 +292,16 @@ extension MAMoviesVC: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return Constants.Dimensions.CollectionViewMovieEdgeInsets
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+        // Four from the end of data source is last row
+        if indexPath.row == MADataStore.shared.movies.count - 4 {
+            resultsPage += 1
+            filterParamDict[Constants.TMDB.Parameters.Page] = String(resultsPage)
+            askDataStoreToCallForMoviesIfEmptyOrParamsChanged()
+        }
     }
 }
 

@@ -29,7 +29,7 @@ class MAFiltersTableVC: UITableViewController {
     var languageSelected = Language.english
     
     var ratingsFilterSelected = false
-    var ratingSelected = Rating.zeroStars
+    var ratingFilterSelected = Rating.zeroStars
     
     var releaseYearFilterSelected = false
     
@@ -117,7 +117,7 @@ class MAFiltersTableVC: UITableViewController {
                         fatalError("more ratings cells than expected")
                     }
             
-                    cell.cellState = cell.rating! == ratingSelected ? .selected : .unselected
+                    cell.cellState = cell.rating! == ratingFilterSelected ? .selected : .unselected
                 }
             }
             else if !languageFilterSelected {
@@ -145,7 +145,7 @@ class MAFiltersTableVC: UITableViewController {
                         fatalError("more ratings cells than expected")
                     }
                     
-                    cell.cellState = cell.rating! == ratingSelected ? .selected : .unselected
+                    cell.cellState = cell.rating! == ratingFilterSelected ? .selected : .unselected
                 }
             }
         
@@ -186,43 +186,96 @@ class MAFiltersTableVC: UITableViewController {
             }
         }
         else if section == .filter {
-            let cell = (tableView.cellForRow(at: indexPath) as! MAFilterTableViewCell)
             
-            if indexPath.row == 0 {
-                
-                cell.cellState = languageFilterSelected ? .pointingDown : .pointingUp
-                
-                languageFilterSelected = !languageFilterSelected
-                    
-                if languageFilterSelected {
-                    insertLanguagesCells()
-                }
-                else {
-                    removeLanguagesCells()
-                }
+            if isIndexPathOfLanguageTitleCell(indexPath) {
+                updateForLanguageTitleCellSelected()
             }
             else if languageFilterSelected {
                 
-                if indexPath.row > 0 &&  indexPath.row <= languages.count {
-                    let oldLanguageCell = tableView.cellForRow(at: IndexPath(row: languageRowSelected, section: 1)) as! MAFilterTableViewCell
-                    oldLanguageCell.cellState = .unselected
-                
-                    cell.cellState = .selected
-                
-                    languageRowSelected = indexPath.row
+                if isIndexPathOfLanguageCell(indexPath) {
+                    updateForLanguageCellSelected()
+                    setParentMovieCollectionViewLanguageParameter()
                 }
                 else if indexPath.row == languages.count + 1 {
-                    thisRatingsCellTapped(cell)
+                    updateForRatingsTitleCellTapped()
+                }
+                else {
+                    updateForRatingsCellTapped(languageFilterSelected: languageFilterSelected)
+                    setParentMovieCollectionViewRatingsParameter()
                 }
             }
             else if !languageFilterSelected {
                 if indexPath.row == 1 {
-                    thisRatingsCellTapped(cell)
+                    updateForRatingsTitleCellTapped()
+                }
+                else {
+                    updateForRatingsCellTapped(languageFilterSelected: languageFilterSelected)
+                    setParentMovieCollectionViewRatingsParameter()
                 }
             }
         }
        
         tableView.deselectRow(at: indexPath, animated: false)
+    }
+    
+    func updateForRatingsCellTapped(languageFilterSelected: Bool) {
+        let newlySelectedRatingsCell = (tableView.cellForRow(at: tableView.indexPathForSelectedRow!) as! MAFilterTableViewCell)
+    
+        if newlySelectedRatingsCell.rating != ratingFilterSelected {
+            
+            let languageCellsOffset = languageFilterSelected ? languages.count : 0
+            
+            for i in (languageCellsOffset + 2)..<(languageCellsOffset + 2) + ratings.count {
+                let cell = tableView.cellForRow(at: IndexPath(row: i, section: 1)) as! MAFilterTableViewCell
+                if cell.cellState == .selected {
+                    cell.cellState = .unselected
+                }
+            }
+            
+            newlySelectedRatingsCell.cellState = .selected
+            ratingFilterSelected = newlySelectedRatingsCell.rating!
+        }
+    }
+    
+    func isIndexPathOfLanguageTitleCell(_ indexPath: IndexPath) -> Bool {
+        return indexPath.row == 0
+    }
+    
+    func updateForLanguageCellSelected() {
+        let oldLanguageCell = currentlySelectedLanguageCell()
+        let newLanguageCell = (tableView.cellForRow(at: tableView.indexPathForSelectedRow!) as! MAFilterTableViewCell)
+        
+        if newLanguageCell.language != oldLanguageCell.language {
+            oldLanguageCell.cellState = .unselected
+            newLanguageCell.cellState = .selected
+            
+            languageSelected = newLanguageCell.language!
+            languageRowSelected = tableView.indexPathForSelectedRow!.row
+        }
+    }
+    func updateForLanguageTitleCellSelected() {
+        
+        let cell = (tableView.cellForRow(at: tableView.indexPathForSelectedRow!) as! MAFilterTableViewCell)
+        
+        cell.cellState = languageFilterSelected ? .pointingDown : .pointingUp
+        
+        languageFilterSelected = !languageFilterSelected
+        
+        if languageFilterSelected {
+            insertLanguagesCells()
+        }
+        else {
+            deleteLanguagesCells()
+        }
+    }
+    
+    func currentlySelectedLanguageCell() -> MAFilterTableViewCell {
+        return tableView.cellForRow(at: IndexPath(row: languageRowSelected, section: 1)) as! MAFilterTableViewCell
+    }
+    
+    func isIndexPathOfLanguageCell(_ indexPath: IndexPath) -> Bool {
+        
+        return indexPath.row > 0 && indexPath.row <= languages.count
     }
     
     func scrollToLastCell() {
@@ -236,7 +289,9 @@ class MAFiltersTableVC: UITableViewController {
         tableView.scrollToRow(at: IndexPath(row: total, section: 1), at: .top, animated: true)
     }
     
-    func thisRatingsCellTapped(_ cell: MAFilterTableViewCell) {
+    func updateForRatingsTitleCellTapped() {
+        
+        let cell = (tableView.cellForRow(at: tableView.indexPathForSelectedRow!) as! MAFilterTableViewCell)
         cell.cellState = cell.cellState == .pointingDown ? .pointingUp : .pointingDown
         ratingsFilterSelected = !ratingsFilterSelected
         
@@ -297,7 +352,7 @@ class MAFiltersTableVC: UITableViewController {
         CATransaction.commit()
     }
     
-    func removeLanguagesCells() {
+    func deleteLanguagesCells() {
         var indexPathsToDelete = [IndexPath]()
         
         for i in 0..<Constants.Filter.Languages.count {
@@ -344,9 +399,16 @@ class MAFiltersTableVC: UITableViewController {
         tableView.insertRows(at: indexPathsToInsert, with: .automatic)
     }
     
-    func setParentsetParentMovieCollectionViewLanguageParameter() {
+    func setParentMovieCollectionViewRatingsParameter() {
         let parentMovieCollectionVC = (parent as! MAMoviesVC)
-        parentMovieCollectionVC.filterParamDict[Constants.TMDB.Parameters.Language] = languageCodeForSelectedLanguage()
+        parentMovieCollectionVC.filterParamDict[Constants.TMDB.Parameters.VoteAverageGreaterThan] = String(ratingFilterSelected.rawValue)
+        print(parentMovieCollectionVC.filterParamDict)
+        parentMovieCollectionVC.askDataStoreToCallForMoviesIfEmptyOrParamsChanged()
+    }
+
+    func setParentMovieCollectionViewLanguageParameter() {
+        let parentMovieCollectionVC = (parent as! MAMoviesVC)
+        parentMovieCollectionVC.filterParamDict[Constants.TMDB.Parameters.OriginalLanguage] = languageCodeForSelectedLanguage()
         parentMovieCollectionVC.askDataStoreToCallForMoviesIfEmptyOrParamsChanged()
     }
 

@@ -20,9 +20,19 @@ class MADataStore: NSObject {
     func getMediaListFromTMDBAPIClientWithParameterDict(params: [String: String], mediaFormat: MediaFormat) {
         
         if mediaFormat == .movie {
-            if moviesParams != params || !moviesParams.isEmpty {
+            // is this new search or next page of present search
+
+            if onlyPageParamIsDifferentFrom(params: params) {
+                // don't empty movies.
+                moviesParams = params
+            }
+            else if moviesParams != params {
                 movies = []
                 moviesParams = params
+            }
+            else {
+                // the same parameters. do nothing
+                return
             }
         }
         else {
@@ -49,9 +59,16 @@ class MADataStore: NSObject {
             
             // Store accordingly
             if mediaFormat == .movie {
+
+                let oldEndIndex = self.movies.isEmpty ? 0 : self.movies.count
+                
                 self.movies += self.arrayOfMovieObjectsFromResponseDicts(dict: responseDict)
-                self.getImagesForMovies()
-                self.postMovieReloadDataNotification()
+                
+                self.getImagesForMoviesInRange(start: oldEndIndex, end: self.movies.count)
+                
+                if !self.onlyPageParamIsDifferentFrom(params: params) {
+                    self.postMovieReloadDataNotification()
+                }
             }
             else {
                 // TODO: add to tv show array
@@ -59,9 +76,10 @@ class MADataStore: NSObject {
         }
     }
     
-    func getImagesForMovies() {
+    func getImagesForMoviesInRange(start: Int, end: Int) {
         
-        for (index, movie) in movies.enumerated() {
+        for i in start..<end {
+            let movie = movies[i]
             
             if let posterPath = movie.posterPath {
                 
@@ -86,7 +104,7 @@ class MADataStore: NSObject {
                     movie.posterImage = image
                     
                     
-                    self.postMovieReloadNotificationForRow(index)
+                    self.postMovieReloadNotificationForRow(i)
                 })
             }
         }
@@ -176,6 +194,27 @@ class MADataStore: NSObject {
                 })
             })
         }
+    }
+    
+    func onlyPageParamIsDifferentFrom(params: Dictionary<String,String>) -> Bool {
+        
+        var pageIsDifferent = false
+        var restOfDictIsSame = true
+        
+        for (key, value) in moviesParams {
+            if key == Constants.TMDB.Parameters.Page {
+                if value != params[Constants.TMDB.Parameters.Page] {
+                    pageIsDifferent = true
+                }
+            }
+            else {
+                if value != params[key] {
+                    restOfDictIsSame = false
+                }
+            }
+        }
+        
+        return pageIsDifferent && restOfDictIsSame
     }
     
     // MARK: Convert to Model Methods

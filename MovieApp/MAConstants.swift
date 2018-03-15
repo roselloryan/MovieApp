@@ -41,6 +41,7 @@ struct Constants {
             static let PrimaryReleaseDateLessThan = "primary_release_date.lte"
             static let PrimaryReleaseDateGreaterThan = "primary_release_date.gte"
             static let VoteAverageGreaterThan = "vote_average.gte"
+            static let OriginalLanguage = "with_original_language"
         }
         
         struct Values {

@@ -334,7 +334,6 @@ class MAAPIClient: NSObject {
         }
     }
         
-    
     private func parseJSONData(_ data: Data, parseDataCompletionHandler: @escaping (_: String?, _: AnyObject?) -> Void) {
         
         var parsedResult: AnyObject!

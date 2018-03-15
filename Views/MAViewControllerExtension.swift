@@ -28,13 +28,15 @@ extension UIViewController {
             let dimmedView = UIView(frame: self.view.window?.frame ?? self.view.frame)
             dimmedView.tag = 1
             dimmedView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
-            self.view.window?.addSubview(dimmedView)
+//            self.view.window?.addSubview(dimmedView)
+            self.view.addSubview(dimmedView)
             
             // Add activity indicator
             let spinnerView = UIActivityIndicatorView.init(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
             spinnerView.tag = 1
             spinnerView.center = CGPoint(x: self.view.center.x, y: self.view.center.y - self.navigationController!.navigationBar.frame.height)
-            self.view.window?.addSubview(spinnerView)
+//            self.view.window?.addSubview(spinnerView)
+            self.view.addSubview(spinnerView)
             spinnerView.startAnimating()
         }
     }
@@ -43,8 +45,9 @@ extension UIViewController {
         
         DispatchQueue.main.async { [unowned self] in
             
-            if let window = self.view.window {
-                
+//            if let window = self.view.window {
+            if let window = self.view {
+            
                 for view in window.subviews {
                     
                     if view.tag == 1 {
