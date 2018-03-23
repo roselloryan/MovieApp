@@ -20,17 +20,20 @@ class MAMovieModel: NSObject {
     var popularity: Double?
     var posterImage: UIImage?
     
+    // Detail properties
+    var hasDetails = false
+    var backdropImage: UIImage?
+    var websiteLink: String?
+    var trailerLink: String?
+    var plotSummary: String?
+    var director: String?
+    var duration: Int?
+    var cast: [String: String]?
+    
+    
     
     init(id: Int) {
         self.id = id
-        self.title = nil
-        self.releaseDate = nil
-        self.posterPath = nil
-        self.backdropPath = nil
-        self.voteAverage = nil
-        self.voteCount = nil
-        self.popularity = nil
-        self.posterImage = nil
     }
     
     init(dictionary: Dictionary<String, Any>) {
@@ -42,7 +45,6 @@ class MAMovieModel: NSObject {
         self.voteAverage = dictionary[Constants.TMDBDictKeys.VoteAverage] as? Int
         self.voteCount = dictionary[Constants.TMDBDictKeys.VoteCount] as? Int
         self.popularity = dictionary[Constants.TMDBDictKeys.Popularity] as? Double
-        self.posterImage = nil
     }
     
     init(id: Int, title: String?, releaseDate: String?, posterPath: String?, backdropPath: String?, voteAverage: Int?, voteCount: Int?, popularity: Double?, posterImage: UIImage?) {

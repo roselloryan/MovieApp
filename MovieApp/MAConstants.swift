@@ -21,6 +21,8 @@ struct Constants {
         
         static let Scheme = "https"
         static let Host = "api.themoviedb.org"
+        static let MoviePath = "/3/movie/"
+        static let TVPath = "/3/tv/"
         static let DiscoverMoviePath = "/3/discover/movie"
         static let DiscoverTVPath = "/3/discover/tv"
         static let ConfigurationPath = "/3/configuration"
@@ -110,13 +112,19 @@ struct Constants {
         static let PosterSizes = "poster_sizes"
         static let LogoSizes = "logo_sizes"
         
+        static let Overview = "overview"
+        static let Homepage = "homepage"
+        static let Runtime = "runtime"
+        
     }
     
     struct NotificationNames {
         static let GenreReload = Notification.Name("GenreReloadNotification")
         static let MovieReload = Notification.Name("MovieReloadNotification")
         static let MovieReloadRow = Notification.Name("MovieReloadRowNotification")
+        static let MovieReloadRows = Notification.Name("MovieReloadRowsNotification")
         static let Error = Notification.Name("errorNotification")
+        static let UpdateDetailVC = Notification.Name("UpdateDetailVC")
     }
     
     struct ErrorKeys {
@@ -126,6 +134,7 @@ struct Constants {
     
     struct NotificationKeys {
         static let Row = "row"
+        static let Rows = "rows"
     }
     
     struct ImageNames {
@@ -177,6 +186,8 @@ struct Constants {
         
         static let FilterTableVC = "FilterTableViewController"
         static let FilterTableViewCell = "FilterTableViewCell"
+        
+        static let DetailMovieSegue = "DetailMovieSegue"
     }
     
     struct Filter {
@@ -190,6 +201,14 @@ struct Constants {
     struct LanguageCodes {
         static let English = "en"
         static let Spanish = "es"
+    }
+    
+    struct FontInfo {
+        static let FilterCellFontSize: CGFloat = 17.0
+    }
+    
+    struct Colors {
+        static let Yellow = UIColor(red: 241/255.0, green: 178/255.0, blue: 0/255.0, alpha: 255/255.0)
     }
     
 }

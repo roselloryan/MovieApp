@@ -18,6 +18,9 @@
 		1B2E2F8D204F748D00FA4D6B /* FIlters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2E2F8C204F748D00FA4D6B /* FIlters.swift */; };
 		1B2E2F8F20508C4700FA4D6B /* FilterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2E2F8E20508C4700FA4D6B /* FilterType.swift */; };
 		1B2E2F912050C5DC00FA4D6B /* Language.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2E2F902050C5DC00FA4D6B /* Language.swift */; };
+		1B56685E2060826400C971FB /* MAMovieDetailContainerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B56685D2060826400C971FB /* MAMovieDetailContainerVC.swift */; };
+		1B5668602060830200C971FB /* MAMovieDetailTableVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B56685F2060830200C971FB /* MAMovieDetailTableVC.swift */; };
+		1B56686420632E7700C971FB /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B56686320632E7700C971FB /* GradientView.swift */; };
 		1BBD79ED2052294F004B60A9 /* Rating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BBD79EC2052294F004B60A9 /* Rating.swift */; };
 		1BD15C5B204A1610000255AE /* MAFiltersTableVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD15C5A204A1610000255AE /* MAFiltersTableVC.swift */; };
 		1BD15C5D204A1BC9000255AE /* MAFilterTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD15C5C204A1BC9000255AE /* MAFilterTableViewCell.swift */; };
@@ -72,6 +75,9 @@
 		1B2E2F8C204F748D00FA4D6B /* FIlters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIlters.swift; sourceTree = "<group>"; };
 		1B2E2F8E20508C4700FA4D6B /* FilterType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterType.swift; sourceTree = "<group>"; };
 		1B2E2F902050C5DC00FA4D6B /* Language.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Language.swift; sourceTree = "<group>"; };
+		1B56685D2060826400C971FB /* MAMovieDetailContainerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMovieDetailContainerVC.swift; sourceTree = "<group>"; };
+		1B56685F2060830200C971FB /* MAMovieDetailTableVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAMovieDetailTableVC.swift; sourceTree = "<group>"; };
+		1B56686320632E7700C971FB /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		1BBD79EC2052294F004B60A9 /* Rating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rating.swift; sourceTree = "<group>"; };
 		1BD15C5A204A1610000255AE /* MAFiltersTableVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAFiltersTableVC.swift; sourceTree = "<group>"; };
 		1BD15C5C204A1BC9000255AE /* MAFilterTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MAFilterTableViewCell.swift; sourceTree = "<group>"; };
@@ -133,6 +139,7 @@
 				1B1E0775203CAA7A00ADCDB5 /* MAGenreTableViewCell.swift */,
 				1BD15C5C204A1BC9000255AE /* MAFilterTableViewCell.swift */,
 				1B1E077C203CDDBA00ADCDB5 /* MAViewControllerExtension.swift */,
+				1B56686320632E7700C971FB /* GradientView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -233,6 +240,8 @@
 				1BF7B5B42036561500068561 /* MAGenreSearchTVC.swift */,
 				1BD15C5E204A2BFC000255AE /* MAMoviesVC.swift */,
 				1BD15C5A204A1610000255AE /* MAFiltersTableVC.swift */,
+				1B56685D2060826400C971FB /* MAMovieDetailContainerVC.swift */,
+				1B56685F2060830200C971FB /* MAMovieDetailTableVC.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -410,8 +419,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1B5668602060830200C971FB /* MAMovieDetailTableVC.swift in Sources */,
 				1B2E2F8B204DBD5100FA4D6B /* SortBy.swift in Sources */,
+				1B56686420632E7700C971FB /* GradientView.swift in Sources */,
 				1B2E2F8D204F748D00FA4D6B /* FIlters.swift in Sources */,
+				1B56685E2060826400C971FB /* MAMovieDetailContainerVC.swift in Sources */,
 				1BD15C5B204A1610000255AE /* MAFiltersTableVC.swift in Sources */,
 				1B2E2F912050C5DC00FA4D6B /* Language.swift in Sources */,
 				1BF7B5B52036561500068561 /* MAGenreSearchTVC.swift in Sources */,

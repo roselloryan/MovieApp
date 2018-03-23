@@ -15,9 +15,53 @@ class MAAPIClient: NSObject {
     private var configDict: Dictionary<String, Any>? = nil
     
     
+    func getDetailsForMedia(id: Int, mediaFormat: MediaFormat, getDetailsCompletionHandler: @escaping (String?, [String : Any]?) -> Void) {
+
+        guard let url = tmdbDetailURLFromParameters([String : String](), format: .movie, id: id) else {
+            getDetailsCompletionHandler("URL failed in \(#function)", nil)
+            return
+        }
+        print(url.absoluteString)
+        
+        let task = session.dataTask(with: url) { (data, response, error) in
+            guard error == nil else {
+                getDetailsCompletionHandler("Error in \(#function):\n" + error!.localizedDescription, nil)
+                return
+            }
+            guard let status = (response as? HTTPURLResponse)?.statusCode, status > 199 && status < 300 else  {
+                let respCodeInt = (response as? HTTPURLResponse)?.statusCode
+                let respString = respCodeInt == nil ? "nil" : String(describing: respCodeInt)
+                getDetailsCompletionHandler("Status code: " + respString + " unsucessful in \(#function)", nil)
+                return
+            }
+            guard let data = data else {
+                getDetailsCompletionHandler("Nil data in \(#function)", nil)
+                return
+            }
+            
+            // what to do with real data?
+            // convert to dictionary and pass to data store
+            self.parseJSONData(data, parseDataCompletionHandler: { (errorString, anyObj) in
+                guard errorString == nil else {
+                    getDetailsCompletionHandler(errorString!, nil)
+                    return
+                }
+                guard let resopnseDict = anyObj as? Dictionary<String, Any> else {
+                    getDetailsCompletionHandler("Nil return from JSON parse in \(#function)", nil)
+                    return
+                }
+                
+                //Success
+                getDetailsCompletionHandler(nil, resopnseDict)
+            })
+        }
+        task.resume()
+    }
+    
+    
     func getMediaListForParameters(paramDict: Dictionary<String, String>, mediaFormat: MediaFormat, getListCompletionHandler: @escaping (String?, Dictionary<String, Any>?) -> Void) {
     
-        guard let url = tmdbURLFromParameters(paramDict, format: mediaFormat) else {
+        guard let url = tmdbDiscoverURLFromParameters(paramDict, format: mediaFormat) else {
             getListCompletionHandler("url failed in \(#function)", nil)
             return
         }
@@ -25,6 +69,7 @@ class MAAPIClient: NSObject {
         let task = session.dataTask(with: url) { [unowned self] (data, response, error) in
             if error != nil {
                 getListCompletionHandler(error?.localizedDescription, nil)
+                return
             }
             
             guard let status = (response as? HTTPURLResponse)?.statusCode, status > 199 && status < 300 else  {
@@ -135,7 +180,7 @@ class MAAPIClient: NSObject {
                          Constants.TMDB.Parameters.PrimaryReleaseYear: Constants.TMDB.CurrentYear,
                          Constants.TMDB.Parameters.WithGenres: String(genreModel.id)]
         
-        guard let url = tmdbURLFromParameters(paramDict, format: .movie) else {
+        guard let url = tmdbDiscoverURLFromParameters(paramDict, format: .movie) else {
             imagePathCompHandler("failed url in \(#function)", nil)
             return
         }
@@ -348,8 +393,29 @@ class MAAPIClient: NSObject {
         }
         
     }
+
+    private func tmdbDetailURLFromParameters(_ parameters: [String: String], format: MediaFormat, id: Int) -> URL? {
+        
+        var params = parameters
+        params[Constants.TMDB.Parameters.ApiKey] =  Constants.TMDB.ApiKey
+        
+        var components = URLComponents()
+        components.scheme = Constants.TMDB.Scheme
+        components.host = Constants.TMDB.Host
+        //TODO: change the path! not discover
+        components.path = format == MediaFormat.movie ? Constants.TMDB.MoviePath : Constants.TMDB.TVPath
+        components.path += String(id)
+        components.queryItems = [URLQueryItem]()
+        
+        for (key, value) in params {
+            let queryItem = URLQueryItem(name: key, value: value)
+            components.queryItems!.append(queryItem)
+        }
+        
+        return components.url
+    }
     
-    private func tmdbURLFromParameters(_ parameters: [String: String], format: MediaFormat ) -> URL? {
+    private func tmdbDiscoverURLFromParameters(_ parameters: [String: String], format: MediaFormat) -> URL? {
         
         var params = parameters
         params[Constants.TMDB.Parameters.ApiKey] =  Constants.TMDB.ApiKey

@@ -18,6 +18,8 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var filtersContainerView: UIView!
     
+    var lastSelectedIndexPath: IndexPath?
+    
     // MARK: - Life Cycle Methods
     
     override func viewDidLoad() {
@@ -75,13 +77,6 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     // MARK: UICollectionViewDelegate
     
     /*
-     // Uncomment this method to specify if the specified item should be highlighted during tracking
-     override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-     return true
-     }
-     */
-    
-    /*
      // Uncomment this method to specify if the specified item should be selected
      override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
      return true
@@ -92,10 +87,34 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     // MARK: - Movie Data Store Related Methods
     
     func askDataStoreToCallForMoviesIfEmptyOrParamsChanged() {
-        if MADataStore.shared.movies.count == 0 || filterParamDict != MADataStore.shared.moviesParams {
+        // TODO: called twice when language changes second time 😫
+        
+        if filterParamDict != MADataStore.shared.moviesParams {
             dimScreenWithActivitySpinner()
+            
             MADataStore.shared.getMediaListFromTMDBAPIClientWithParameterDict(params: filterParamDict , mediaFormat: .movie)
         }
+    }
+    
+    func onlyPageParamIsDifferentFrom(params: Dictionary<String,String>) -> Bool {
+        
+        var pageIsDifferent = false
+        var restOfDictIsSame = true
+        
+        for (key, value) in MADataStore.shared.moviesParams {
+            if key == Constants.TMDB.Parameters.Page {
+                if value != params[Constants.TMDB.Parameters.Page] {
+                    pageIsDifferent = true
+                }
+            }
+            else {
+                if value != params[key] {
+                    restOfDictIsSame = false
+                }
+            }
+        }
+        
+        return pageIsDifferent && restOfDictIsSame
     }
     
     func defaultFilterParametersDictionary() -> Dictionary<String, String> {
@@ -106,6 +125,7 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
                          Constants.TMDB.Parameters.Page: Constants.TMDB.Values.One,
                          Constants.TMDB.Parameters.SortBy: Constants.TMDB.Values.PopularityDesc,
                          Constants.TMDB.Parameters.PrimaryReleaseDateLessThan: Constants.TMDB.CurrentDate,
+                         Constants.TMDB.Parameters.OriginalLanguage: Constants.LanguageCodes.English,
                          Constants.TMDB.Parameters.WithGenres: String(genre.id)]
         
         return paramDict
@@ -114,6 +134,10 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     // MARK: - Notification Methods
     func addObserverForDataReload() {
         NotificationCenter.default.addObserver(self, selector: #selector(notificationReloadData), name: Constants.NotificationNames.MovieReload, object: nil)
+    }
+    
+    func addObserverForReloadRows() {
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadRows(_:)), name: Constants.NotificationNames.MovieReloadRows, object: nil)
     }
     
     func addObserverForReloadCellAtRow() {
@@ -136,23 +160,46 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
         NotificationCenter.default.removeObserver(self, name: Constants.NotificationNames.MovieReloadRow, object: nil)
     }
     
+    func removeObserverForReloadRows() {
+        NotificationCenter.default.removeObserver(self, name: Constants.NotificationNames.MovieReloadRows, object: nil)
+    }
+    
     
     
     func addNotificationObservers() {
         addObserverForDataReload()
         addObserverForReloadCellAtRow()
+        addObserverForReloadRows()
         addObserverForErrors()
     }
     
     func removeNotificationObservers() {
         removeObserverForDataReload()
         removeObserverForReloadCellAtRow()
+        removeObserverForReloadRows()
         removeObserverForError()
     }
     
     @objc func notificationReloadData() {
         DispatchQueue.main.async { [unowned self] in
+            self.undimScreenAndRemoveActivitySpinner()
             self.collectionView?.reloadData()
+        }
+    }
+    
+    @objc func reloadRows(_ notification: Notification) {
+        
+        if let userInfo = notification.userInfo {
+            if let rows = userInfo[Constants.NotificationKeys.Rows] as? [Int] {
+                
+                let indexPaths = rows.map {IndexPath(row: $0, section: 0)}
+                
+                print(indexPaths)
+                DispatchQueue.main.async { [unowned self] in
+                    self.undimScreenAndRemoveActivitySpinner()
+                    self.collectionView?.insertItems(at: indexPaths)
+                }
+            }
         }
     }
     
@@ -163,7 +210,12 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
                 
                 DispatchQueue.main.async { [unowned self] in
                     self.undimScreenAndRemoveActivitySpinner()
-                    self.collectionView?.reloadItems(at: [IndexPath(row: row, section: 0)])
+                    
+                    let indexPath = IndexPath(row: row, section: 0)
+                    
+                    if self.collectionView.cellForItem(at: indexPath) != nil {
+                        self.collectionView?.reloadItems(at: [indexPath])
+                    }
                 }
             }
         }
@@ -196,6 +248,11 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using [segue destinationViewController].
         // Pass the selected object to the new view controller.
+        if segue.identifier == Constants.Identifiers.DetailMovieSegue {
+            let destinationVC = segue.destination as! MAMovieDetailContainerVC
+            let movie = (collectionView.cellForItem(at: collectionView.indexPathsForSelectedItems!.first!) as! MAMovieCollectionViewCell).movie
+            destinationVC.movie = movie!
+        }
     }
     
     // MARK: - Navigation bar methods
@@ -216,7 +273,6 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
         print("Filter Button tapped in Movie Collectoin VC")
         
         toggleFilterTableViewUI()
-
     }
     
     // MARK: Filter UI Methods
@@ -252,12 +308,12 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
         
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleFilterTableViewUI))
         
-        let dimView = UIView.init(frame: collectionView.bounds)
+        let dimView = UIView(frame: view.frame)
         dimView.backgroundColor = .black
         dimView.alpha = 0.0
-        dimView.tag = 1
+        dimView.tag = 2
         dimView.addGestureRecognizer(tapGestureRecognizer)
-        collectionView.addSubview(dimView)
+        view.insertSubview(dimView, at: 1)
         
         UIView.animate(withDuration: 0.2) {
             dimView.alpha = 0.6
@@ -266,8 +322,8 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
 
     func undimCollectionView() {
         
-        for subview in collectionView.subviews {
-            if subview.tag == 1 {
+        for subview in view.subviews {
+            if subview.tag == 2 {
                 UIView.animate(withDuration: 0.2, animations: {
                     subview.alpha = 0.0
                 }, completion: { (complete) in

@@ -164,7 +164,7 @@ class MAFiltersTableVC: UITableViewController {
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let headerView = view as! UITableViewHeaderFooterView
         headerView.contentView.backgroundColor = UIColor.black
-        headerView.textLabel?.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        headerView.textLabel?.font = UIFont.systemFont(ofSize: Constants.FontInfo.FilterCellFontSize, weight: .regular)
         headerView.textLabel?.textColor = .lightText
         headerView.detailTextLabel?.textColor = .lightText
         }
@@ -402,19 +402,24 @@ class MAFiltersTableVC: UITableViewController {
     func setParentMovieCollectionViewRatingsParameter() {
         let parentMovieCollectionVC = (parent as! MAMoviesVC)
         parentMovieCollectionVC.filterParamDict[Constants.TMDB.Parameters.VoteAverageGreaterThan] = String(ratingFilterSelected.rawValue)
-        print(parentMovieCollectionVC.filterParamDict)
+        parentMovieCollectionVC.filterParamDict[Constants.TMDB.Parameters.Page] = Constants.TMDB.Values.One
+        parentMovieCollectionVC.collectionView.setContentOffset(CGPoint.zero, animated: false)
         parentMovieCollectionVC.askDataStoreToCallForMoviesIfEmptyOrParamsChanged()
     }
 
     func setParentMovieCollectionViewLanguageParameter() {
         let parentMovieCollectionVC = (parent as! MAMoviesVC)
         parentMovieCollectionVC.filterParamDict[Constants.TMDB.Parameters.OriginalLanguage] = languageCodeForSelectedLanguage()
+        parentMovieCollectionVC.filterParamDict[Constants.TMDB.Parameters.Page] = Constants.TMDB.Values.One
+        parentMovieCollectionVC.collectionView.setContentOffset(CGPoint.zero, animated: false)
         parentMovieCollectionVC.askDataStoreToCallForMoviesIfEmptyOrParamsChanged()
     }
 
     func setParentMovieCollectionViewSortByParameter(_ sortByParam: SortBy) {
         let parentMovieCollectionVC = (parent as! MAMoviesVC)
         parentMovieCollectionVC.filterParamDict[Constants.TMDB.Parameters.SortBy] = dictValueForSortBy(sortByParam)
+        parentMovieCollectionVC.filterParamDict[Constants.TMDB.Parameters.Page] = Constants.TMDB.Values.One
+        parentMovieCollectionVC.collectionView.setContentOffset(CGPoint.zero, animated: false)
         parentMovieCollectionVC.askDataStoreToCallForMoviesIfEmptyOrParamsChanged()
     }
     

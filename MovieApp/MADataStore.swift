@@ -13,21 +13,68 @@ class MADataStore: NSObject {
     static let shared = MADataStore()
     
     lazy var genres: [MAGenreModel] = self.getGenresArrayFromTMDBAPIClient()
+    
     var movies = [MAMovieModel]()
-    var moviesParams = Dictionary<String, String>()
+    
+    var moviesParams = [String : String]()
+    
+    
+    func getMediaDetailsForMovie(movie: MAMovieModel) {
+        
+        // Have api call for deets
+        MAAPIClient.shared.getDetailsForMedia(id: movie.id, mediaFormat: .movie) { [unowned self] (errorString, detailsDict) in
+            guard errorString == nil else {
+                // present error
+                print("Error in getMediaDetails in DS:\n" + errorString!)
+                self.postUpdateDetailVCNotification()
+                return
+            }
+            guard let detailsDict = detailsDict else {
+                // present error
+                print("detailsDict nil in getMediaDetails in DS:\n")
+                self.postUpdateDetailVCNotification()
+                return
+            }
+            print("Details Dict:\n\(detailsDict)")
+            
+            // UPdate movie model details
+            self.addDetailsToMovie(detailsDict: detailsDict, movie: movie)
+            
+    
+            // Get back drop image
+            if let backdropPath = movie.backdropPath {
+                MAAPIClient.shared.getImageForPathString(pathString: backdropPath, fileSize: Constants.TMDB.FileSizes.BackdropSizes[2], imageCompletionHandler: { (errorString, image) in
+                    guard errorString == nil else {
+                        // Probably will not report image failure as alert
+                        return
+                    }
+                    guard let backgroundImage = image else {
+                        // Again, probably will not report image failure as alert
+                        return
+                    }
+                    
+                    movie.backdropImage = backgroundImage
+                    
+                    self.postUpdateDetailVCNotification()
+                })
+            }
+            
+            // Todo: get cast dictionary...
+        
+        }
+    }
     
     
     func getMediaListFromTMDBAPIClientWithParameterDict(params: [String: String], mediaFormat: MediaFormat) {
         
+        let onlyPageParamDifferent = onlyPageParamIsDifferentFrom(params: params)
+        let requestWithNewParameters = !onlyPageParamDifferent && params != moviesParams
+        
         if mediaFormat == .movie {
             // is this new search or next page of present search
 
-            if onlyPageParamIsDifferentFrom(params: params) {
+            if onlyPageParamDifferent || requestWithNewParameters {
                 // don't empty movies.
-                moviesParams = params
-            }
-            else if moviesParams != params {
-                movies = []
                 moviesParams = params
             }
             else {
@@ -59,15 +106,26 @@ class MADataStore: NSObject {
             
             // Store accordingly
             if mediaFormat == .movie {
-
+                
+                if requestWithNewParameters {
+                    self.movies = []
+                }
+                
                 let oldEndIndex = self.movies.isEmpty ? 0 : self.movies.count
+                print(oldEndIndex)
                 
                 self.movies += self.arrayOfMovieObjectsFromResponseDicts(dict: responseDict)
                 
                 self.getImagesForMoviesInRange(start: oldEndIndex, end: self.movies.count)
                 
-                if !self.onlyPageParamIsDifferentFrom(params: params) {
+                if requestWithNewParameters {
                     self.postMovieReloadDataNotification()
+                }
+                else {
+                    // reload with the placeholder images for newly added movies
+                    let x = self.movies.count
+                    print("x = \(x)")
+                    self.postMovieReloadNotificationForRows(Array(oldEndIndex..<self.movies.count))
                 }
             }
             else {
@@ -102,7 +160,6 @@ class MADataStore: NSObject {
                     }
                     
                     movie.posterImage = image
-                    
                     
                     self.postMovieReloadNotificationForRow(i)
                 })
@@ -217,6 +274,11 @@ class MADataStore: NSObject {
         return pageIsDifferent && restOfDictIsSame
     }
     
+    func addDetailsToMovie(detailsDict: Dictionary<String, Any>, movie: MAMovieModel) {
+        movie.plotSummary = detailsDict[Constants.TMDBDictKeys.Overview] as? String
+        movie.duration = detailsDict[Constants.TMDBDictKeys.Runtime] as? Int
+    }
+    
     // MARK: Convert to Model Methods
     func arrayOfGenreObjectsFromGenreResponseDict(_ dict: Dictionary<String, Any>) -> [MAGenreModel]? {
         
@@ -263,6 +325,10 @@ class MADataStore: NSObject {
     
     // MARK: - Notification Functions
     
+    func postUpdateDetailVCNotification() {
+        NotificationCenter.default.post(name: Constants.NotificationNames.UpdateDetailVC, object: nil)
+    }
+    
     func postGenreReloadNotification() {
         NotificationCenter.default.post(name: Constants.NotificationNames.GenreReload, object: nil)
     }
@@ -274,6 +340,11 @@ class MADataStore: NSObject {
     func postMovieReloadNotificationForRow(_ row: Int) {
         let userInfo = [Constants.NotificationKeys.Row : row]
         NotificationCenter.default.post(name: Constants.NotificationNames.MovieReloadRow, object: nil , userInfo: userInfo)
+    }
+    
+    func postMovieReloadNotificationForRows(_ rows: [Int]) {
+        let userInfo = [Constants.NotificationKeys.Rows : rows]
+        NotificationCenter.default.post(name: Constants.NotificationNames.MovieReloadRows, object: nil , userInfo: userInfo)
     }
     
     func postErrorNotificationWithUserInfoDict(_ dict: Dictionary<String, Any>) {
