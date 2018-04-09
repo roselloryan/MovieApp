@@ -138,7 +138,8 @@ struct Constants {
     }
     
     struct ImageNames {
-        static let Placeholder = "placeholder"
+        static let Placeholder = "canvas22"
+        static let PosterPlaceholder = "canvas23"
         static let Unselected = "canvas1"
         static let Selected = "canvas2"
         static let DownChevron = "canvas3"
@@ -149,6 +150,18 @@ struct Constants {
         static let ThreeStarsAndUp = "canvas8"
         static let FourStarsAndUp = "canvas9"
         static let FiveStarsOnly = "canvas10"
+        
+        static let ZeroStars = "canvas11"
+        static let HalfStar = "canvas12"
+        static let OneStar = "canvas13"
+        static let OneAndAHalfStars = "canvas14"
+        static let TwoStars = "canvas15"
+        static let TwoAndAHalfStars = "canvas16"
+        static let ThreeStars = "canvas17"
+        static let ThreeAndAHalfStars = "canvas18"
+        static let FourStars = "canvas19"
+        static let FourAndAHalfStars = "canvas20"
+        static let FiveStars = "canvas21"
         
     }
     
@@ -188,6 +201,10 @@ struct Constants {
         static let FilterTableViewCell = "FilterTableViewCell"
         
         static let DetailMovieSegue = "DetailMovieSegue"
+        
+        static let CastCollectionViewCell = "CastCollectionViewCell"
+        
+        static let MAMovieVCStoryboardIdentifier = "MAMovieVC"
     }
     
     struct Filter {
@@ -209,6 +226,18 @@ struct Constants {
     
     struct Colors {
         static let Yellow = UIColor(red: 241/255.0, green: 178/255.0, blue: 0/255.0, alpha: 255/255.0)
+    }
+    
+    struct YouTube {
+        static let VideoUrlBase = "https://www.youtube.com/watch?v="
+    }
+    
+    struct AttributedText {
+        static let GenreCellsTextAttributes = [ NSAttributedStringKey.strokeColor : UIColor.black,
+                                                NSAttributedStringKey.foregroundColor : UIColor.white,
+                                                NSAttributedStringKey.strokeWidth : -2.0,
+                                                NSAttributedStringKey.font : UIFont.systemFont(ofSize: 30)]
+                                                as [NSAttributedStringKey : Any]
     }
     
 }

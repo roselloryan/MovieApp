@@ -27,7 +27,7 @@ class GradientView: UIView {
             return;
         }
         
-        theLayer.colors = [UIColor.black.withAlphaComponent(0.4).cgColor, UIColor.black.cgColor]
+        theLayer.colors = [UIColor.black.withAlphaComponent(0.5).cgColor, UIColor.black.cgColor]
         theLayer.frame = self.bounds
     }
 

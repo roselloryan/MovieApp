@@ -30,6 +30,7 @@ class MAMovieCollectionViewCell: UICollectionViewCell {
     private func updateMoviePosterImage() {
         DispatchQueue.main.async { [unowned self] in
             self.posterImageView.image = self.movie.posterImage ?? UIImage(named: Constants.ImageNames.Placeholder)
+//            self.posterImageView.image = self.movie.posterImage
         }
     }
     

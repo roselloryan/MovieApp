@@ -7,13 +7,13 @@
 //
 
 import UIKit
+import WebKit
 
 class MAMovieDetailTableVC: UITableViewController {
     
     @IBOutlet weak var movieTitleLabel: UILabel!
     @IBOutlet weak var ratingsImageView: UIImageView!
     @IBOutlet weak var popularityPercentageLabel: UILabel!
-    @IBOutlet weak var backgroundImageView: UIImageView!
     @IBOutlet weak var posterImageView: UIImageView!
     
     @IBOutlet weak var button1: UIButton!
@@ -22,15 +22,27 @@ class MAMovieDetailTableVC: UITableViewController {
     
     @IBOutlet weak var buttonsStackView: UIStackView!
     
-    var tableViewBackgroundImageView: UIImageView?
+    @IBOutlet weak var castTitleLabel: UILabel!
+    @IBOutlet weak var castCollectionView: UICollectionView!
+
+    @IBOutlet weak var plotSummaryTextView: UITextView!
     
+    var tableViewBackgroundImageView: UIImageView?
+    var tableViewBackgroundY: CGFloat = 0.0
+    
+    var webView: WKWebView!
     var movie: MAMovieModel!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+        castCollectionView.register(CastCollectionViewCell.self, forCellWithReuseIdentifier: Constants.Identifiers.CastCollectionViewCell)
+        castCollectionView.delegate = self
+        castCollectionView.dataSource = self
+    
+        roundButtonsCorners()
+        setButtonTitles()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -49,20 +61,39 @@ class MAMovieDetailTableVC: UITableViewController {
             MADataStore.shared.getMediaDetailsForMovie(movie: movie)
         }
         
-        
-        
         print(movie.id)
         movieTitleLabel.text = movie.title
         popularityPercentageLabel.text = movie.popularity == nil ? "Popularity: unknown" : "Popularity: " + String(format: "%.1f", movie.popularity!) + "%"
+        
+        setCollectionViewHeight()
+    }
+
+    fileprivate func setButtonTitles() {
+        button1.setTitle("Trailer", for: .normal)
+        button2.setTitle("Website", for: .normal)
+        button3.setTitle("Add To List", for: .normal)
+    }
+    
+    fileprivate func roundButtonsCorners() {
+        button1.layer.cornerRadius = 8.0
+        button2.layer.cornerRadius = 8.0
+        button3.layer.cornerRadius = 8.0
+    }
+    
+    fileprivate func setMoviePosterImage() {
+        self.posterImageView.image = self.movie.posterImage ?? UIImage(named: Constants.ImageNames.Placeholder)
+    }
+    
+    fileprivate func setCollectionViewHeight() {
+        castCollectionView.frame = CGRect.init(x: castCollectionView.frame.origin.x, y: castCollectionView.frame.origin.y, width: castCollectionView.frame.width, height: Constants.Dimensions.CollectionViewMovieCellSize.height)
     }
     
     @objc func updateUI() {
         print("update ui in detial table vc!")
         
         DispatchQueue.main.async { [unowned self] in
-            self.posterImageView.image = self.movie.posterImage ?? UIImage(named: Constants.ImageNames.Placeholder)
-            self.backgroundImageView.image = nil
-            self.backgroundImageView.backgroundColor = .clear
+            
+            self.setMoviePosterImage()
             
             // see what background image does?
             let backgroundContainerView = UIView(frame: self.tableView.bounds)
@@ -78,9 +109,33 @@ class MAMovieDetailTableVC: UITableViewController {
             self.tableView.backgroundView = backgroundContainerView
             backgroundContainerView.addSubview(tableViewImageView)
             
+            self.tableViewBackgroundY = self.tableViewBackgroundImageView!.frame.origin.y
             
+            self.updatePlotSummaryTextView()
+    
+            self.updateWebsiteLinkButton()
             
             self.undimScreenAndRemoveActivitySpinner()
+        }
+    }
+    
+    func updateWebsiteLinkButton() {
+        if movie.websiteLink == nil {
+            button2.isEnabled = false
+            button2.removeFromSuperview()
+            button2.alpha = 0.0
+            buttonsStackView.addArrangedSubview(button2)
+        }   
+    }
+    
+    func updatePlotSummaryTextView() {
+        if let plot = movie.plotSummary {
+
+            plotSummaryTextView.text = plot
+            tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
+        }
+        else {
+            print("No plot for movie. What should you see?")
         }
     }
     
@@ -92,14 +147,38 @@ class MAMovieDetailTableVC: UITableViewController {
     
     @IBAction func button1Tapped(_ sender: UIButton) {
         print("Button 1 tapped")
+        
+        // TODO: Open the trailer link
+
+        let  webVC = UIViewController()
+        
+        let webConfiguration = WKWebViewConfiguration()
+        webView = WKWebView(frame: tableView.frame, configuration: webConfiguration)
+        
+        
+        let myURL = URL(string: "https://www.apple.com")
+        let myRequest = URLRequest(url: myURL!)
+        webView.load(myRequest)
+        
+        webVC.view = webView
+
+        navigationController?.pushViewController(webVC, animated: true)
+    
     }
+    
     
     @IBAction func button2Tapped(_ sender: UIButton) {
         print("Button 2 tapped")
+        // TODO: Open the website link
+        
+        if let link = URL(string: movie.websiteLink ?? "https://www.apple.com") {
+            UIApplication.shared.open(link)
+        }
     }
     
     @IBAction func button3Tapped(_ sender: UIButton) {
         print("Button 3 tapped")
+        // TODO: ADD TO THE FUCKING LIST ALREADY
     }
     
     override func didReceiveMemoryWarning() {
@@ -116,19 +195,13 @@ class MAMovieDetailTableVC: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 3
     }
-
-    /*
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
-        return cell
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableViewAutomaticDimension
     }
-    */
 
 
-    /*
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -136,19 +209,49 @@ class MAMovieDetailTableVC: UITableViewController {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
     }
-    */
 
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-    
-        if let imageView = tableViewBackgroundImageView {
-            let y = scrollView.contentOffset.y
+        if scrollView.isKind(of: UITableView.self) {
+            if let imageView = tableViewBackgroundImageView {
+                let yOffset = scrollView.contentOffset.y
             
-            if y > 0 {
-                imageView.frame.origin = CGPoint(x: imageView.frame.origin.x, y: -(y/2.0))
+                imageView.frame.origin.y = yOffset > 0 ? tableViewBackgroundY - (yOffset / 2.0) : tableViewBackgroundY
             }
-            else {
-                imageView.frame.origin  = CGPoint.zero
-            }
+        }
+        else {
+            print("collection view is probably scrolling")
         }
     }
 }
+
+// MARK: Cast Collection View Extension
+extension MAMovieDetailTableVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 10
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.Identifiers.CastCollectionViewCell, for: indexPath) as! CastCollectionViewCell
+    
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return Constants.Dimensions.CollectionViewMovieCellSize
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return Constants.Dimensions.CollectionViewMovieEdgeInsets
+    }
+}
+

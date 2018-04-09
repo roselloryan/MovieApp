@@ -125,6 +125,7 @@ class MAFiltersTableVC: UITableViewController {
                     cell.textLabel?.text = "Ratings:"
                     cell.cellState = .pointingDown
                 }
+                
                 if indexPath.row > 1 && indexPath.row < 8 {
                     cell.rating = .zeroStars
                     cell.cellState = .unselected

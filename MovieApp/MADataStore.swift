@@ -58,6 +58,13 @@ class MADataStore: NSObject {
                     self.postUpdateDetailVCNotification()
                 })
             }
+            else {
+                self.postUpdateDetailVCNotification()
+            }
+            
+            // Get video link if exist
+            
+            
             
             // Todo: get cast dictionary...
         
@@ -277,6 +284,9 @@ class MADataStore: NSObject {
     func addDetailsToMovie(detailsDict: Dictionary<String, Any>, movie: MAMovieModel) {
         movie.plotSummary = detailsDict[Constants.TMDBDictKeys.Overview] as? String
         movie.duration = detailsDict[Constants.TMDBDictKeys.Runtime] as? Int
+        movie.websiteLink = detailsDict[Constants.TMDBDictKeys.Homepage] as? String
+
+        movie.hasDetails = true
     }
     
     // MARK: Convert to Model Methods

@@ -15,7 +15,7 @@ class MAMovieModel: NSObject {
     var releaseDate: String?
     var posterPath: String?
     var backdropPath: String?
-    var voteAverage: Int? // 0-10 representing 0-5 stars in half stars
+    var voteAverage: Double? // 0-10 representing 0-5 stars in half stars
     var voteCount: Int?
     var popularity: Double?
     var posterImage: UIImage?
@@ -42,12 +42,12 @@ class MAMovieModel: NSObject {
         self.releaseDate = dictionary[Constants.TMDBDictKeys.ReleaseDate] as? String
         self.posterPath = dictionary[Constants.TMDBDictKeys.PosterPath] as? String
         self.backdropPath = dictionary[Constants.TMDBDictKeys.BackdropPath] as? String
-        self.voteAverage = dictionary[Constants.TMDBDictKeys.VoteAverage] as? Int
+        self.voteAverage = dictionary[Constants.TMDBDictKeys.VoteAverage] as? Double
         self.voteCount = dictionary[Constants.TMDBDictKeys.VoteCount] as? Int
         self.popularity = dictionary[Constants.TMDBDictKeys.Popularity] as? Double
     }
     
-    init(id: Int, title: String?, releaseDate: String?, posterPath: String?, backdropPath: String?, voteAverage: Int?, voteCount: Int?, popularity: Double?, posterImage: UIImage?) {
+    init(id: Int, title: String?, releaseDate: String?, posterPath: String?, backdropPath: String?, voteAverage: Double?, voteCount: Int?, popularity: Double?, posterImage: UIImage?) {
         self.id = id
         self.title = title
         self.releaseDate = releaseDate

@@ -34,13 +34,18 @@ class MAGenreTableViewCell: UITableViewCell {
     // MARK: - UI Update functions
     func updateGenreLabel() {
         DispatchQueue.main.async { [unowned self] in
-            self.genreLabel.text = self.genreModel.name
+            
+            if let genreName = self.genreModel.name {
+                
+                self.genreLabel.attributedText = NSAttributedString(string: genreName, attributes: Constants.AttributedText.GenreCellsTextAttributes)
+            }
         }
     }
     
     func updateGenreImage() {
         DispatchQueue.main.async {
-            self.genreImageView.image = self.genreModel.genreImage ?? UIImage(named: Constants.ImageNames.Placeholder)
+//            self.genreImageView.image = self.genreModel.genreImage ?? UIImage(named: Constants.ImageNames.Placeholder)
+            self.genreImageView.image = self.genreModel.genreImage
         }
     }
     

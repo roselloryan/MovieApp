@@ -75,13 +75,7 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     }
     
     // MARK: UICollectionViewDelegate
-    
-    /*
-     // Uncomment this method to specify if the specified item should be selected
-     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-     return true
-     }
-     */
+
     
     
     // MARK: - Movie Data Store Related Methods
@@ -248,8 +242,9 @@ class MAMoviesVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using [segue destinationViewController].
         // Pass the selected object to the new view controller.
+
         if segue.identifier == Constants.Identifiers.DetailMovieSegue {
-            let destinationVC = segue.destination as! MAMovieDetailContainerVC
+            let destinationVC = segue.destination as! MADetailedMovieVC
             let movie = (collectionView.cellForItem(at: collectionView.indexPathsForSelectedItems!.first!) as! MAMovieCollectionViewCell).movie
             destinationVC.movie = movie!
         }

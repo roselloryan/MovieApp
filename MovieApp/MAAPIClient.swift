@@ -15,6 +15,52 @@ class MAAPIClient: NSObject {
     private var configDict: Dictionary<String, Any>? = nil
     
     
+    func getVideosForMovieId( _ id: Int, getVideoCompletionHandler: @escaping(String?, [[String : Any]]?) -> Void) {
+        
+        guard let url = tmdbVideosURLFromParameters(id: id, format: .movie) else {
+            getVideoCompletionHandler("URL failed in \(#function)", nil)
+            return
+        }
+        
+        let dataTask = session.dataTask(with: url) { (data, response, error) in
+            guard error == nil else {
+                getVideoCompletionHandler("Error in \(#function):\n" + error!.localizedDescription, nil)
+                return
+            }
+            guard let status = (response as? HTTPURLResponse)?.statusCode, status > 199 && status < 300 else  {
+                let respCodeInt = (response as? HTTPURLResponse)?.statusCode
+                let respString = respCodeInt == nil ? "nil" : String(describing: respCodeInt)
+                getVideoCompletionHandler("Status code: " + respString + " unsucessful in \(#function)", nil)
+                return
+            }
+            guard let data = data else {
+                getVideoCompletionHandler("Nil data in \(#function)", nil)
+                return
+            }
+            
+            self.parseJSONData(data, parseDataCompletionHandler: { (errorString, anyObj) in
+                guard errorString == nil else {
+                    getVideoCompletionHandler(errorString!, nil)
+                    return
+                }
+                guard let responseDict = anyObj as? Dictionary<String, Any> else {
+                    getVideoCompletionHandler("Nil Failed dict cast in \(#function)", nil)
+                    return
+                }
+                
+                guard let arrayOfVideoDicts = responseDict["results"] as? [[String : Any]] else {
+                    getVideoCompletionHandler("No results array in \(#function)", nil)
+                    return
+                }
+                
+                // handle success
+                getVideoCompletionHandler(nil, arrayOfVideoDicts)
+            })
+        }
+        dataTask.resume()
+    }
+    
+    
     func getDetailsForMedia(id: Int, mediaFormat: MediaFormat, getDetailsCompletionHandler: @escaping (String?, [String : Any]?) -> Void) {
 
         guard let url = tmdbDetailURLFromParameters([String : String](), format: .movie, id: id) else {
@@ -23,7 +69,7 @@ class MAAPIClient: NSObject {
         }
         print(url.absoluteString)
         
-        let task = session.dataTask(with: url) { (data, response, error) in
+        let task = session.dataTask(with: url) { [unowned self] (data, response, error) in
             guard error == nil else {
                 getDetailsCompletionHandler("Error in \(#function):\n" + error!.localizedDescription, nil)
                 return
@@ -229,7 +275,8 @@ class MAAPIClient: NSObject {
                     backdropPath = resultsArr[index][Constants.TMDBDictKeys.BackdropPath] as? String
                     index += 1
                     
-                    let genreStrings = MADataStore.shared.genres.flatMap { $0.imagePathString }
+//                    let genreStrings = MADataStore.shared.genres.flatMap { $0.imagePathString } // Changed for depricatino of flatMap
+                    let genreStrings = MADataStore.shared.genres.compactMap { $0.imagePathString }
                     
                     // Prevents movies with multiple genres from being repeated in MAGenreSearchTVC
                     if let path = backdropPath {
@@ -391,7 +438,28 @@ class MAAPIClient: NSObject {
             
             parseDataCompletionHandler("Failed to parse data.", nil)
         }
+    }
+    
+    private func tmdbVideosURLFromParameters(id: Int, format: MediaFormat) -> URL? {
         
+        var params = [String : String]()
+        params[Constants.TMDB.Parameters.ApiKey] =  Constants.TMDB.ApiKey
+        
+        var components = URLComponents()
+        components.scheme = Constants.TMDB.Scheme
+        components.host = Constants.TMDB.Host
+        //TODO: change the path! not discover
+        components.path = format == MediaFormat.movie ? Constants.TMDB.MoviePath : Constants.TMDB.TVPath
+        components.path += String(id)
+        components.path += "video/"
+        components.queryItems = [URLQueryItem]()
+        
+        for (key, value) in params {
+            let queryItem = URLQueryItem(name: key, value: value)
+            components.queryItems!.append(queryItem)
+        }
+        
+        return components.url
     }
 
     private func tmdbDetailURLFromParameters(_ parameters: [String: String], format: MediaFormat, id: Int) -> URL? {
@@ -402,7 +470,6 @@ class MAAPIClient: NSObject {
         var components = URLComponents()
         components.scheme = Constants.TMDB.Scheme
         components.host = Constants.TMDB.Host
-        //TODO: change the path! not discover
         components.path = format == MediaFormat.movie ? Constants.TMDB.MoviePath : Constants.TMDB.TVPath
         components.path += String(id)
         components.queryItems = [URLQueryItem]()
