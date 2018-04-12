@@ -47,7 +47,7 @@ class MAMovieDetailTableVC: UITableViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(updateUI), name: Constants.NotificationNames.UpdateDetailVC, object: nil)
         
         buttonsStackView.layoutMargins = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)

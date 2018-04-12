@@ -44,7 +44,6 @@ class MAGenreTableViewCell: UITableViewCell {
     
     func updateGenreImage() {
         DispatchQueue.main.async {
-//            self.genreImageView.image = self.genreModel.genreImage ?? UIImage(named: Constants.ImageNames.Placeholder)
             self.genreImageView.image = self.genreModel.genreImage
         }
     }

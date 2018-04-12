@@ -26,7 +26,7 @@ class CastCollectionViewCell: UICollectionViewCell {
     }
     
     func buildCellUI() {
-    
+        
         let imageView = UIImageView(image: UIImage(named:"CastImage"))
         imageView.contentMode = .scaleAspectFill
         
@@ -34,24 +34,26 @@ class CastCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(castImageView)
         
         castImageView.translatesAutoresizingMaskIntoConstraints = false
+        castImageView.clipsToBounds = true
         
         castImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
         castImageView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
         castImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
-        castImageView.heightAnchor.constraint(equalTo: contentView.widthAnchor , multiplier: 1.51)
+        castImageView.heightAnchor.constraint(equalTo: contentView.widthAnchor , multiplier: 1.51).isActive = true
         
         
-        let label = UILabel()
+
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: contentView.frame.width, height: 30))
         label.font = UIFont.systemFont(ofSize: 12.0)
+        label.textAlignment = .center
         label.textColor = .white
-        label.backgroundColor = .gray
-        label.text = "Chadwick Boseman"
-        label.numberOfLines = 0
+        label.backgroundColor = .clear
+        label.numberOfLines = 2
         
         nameLabel = label
         contentView.addSubview(nameLabel)
         
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
         
         nameLabel.topAnchor.constraint(equalTo: castImageView.bottomAnchor).isActive = true
         nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true

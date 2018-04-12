@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import WebKit
 
 class MADetailedMovieVC: UIViewController {
     
@@ -29,6 +30,13 @@ class MADetailedMovieVC: UIViewController {
 
     @IBOutlet weak var plotSummaryTextView: UITextView!
     
+    @IBOutlet weak var castContainerView: UIView!
+    
+    var castCollectionView: UICollectionView!
+    
+    var backdropImageViewY: CGFloat = 0.0
+    
+    var webView: WKWebView!
     
     var movie: MAMovieModel!
 
@@ -38,11 +46,13 @@ class MADetailedMovieVC: UIViewController {
 
         print("movie title: \(movie.title!)")
         print("movie id: \(movie.id)")
-    
+        
+        scrollView.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         
         if !movie.hasDetails {
             print("movie id: \(movie.id)")
@@ -55,30 +65,107 @@ class MADetailedMovieVC: UIViewController {
         
         setButtonTitles()
         roundButtonsCorners()
-
         addInsetsForLogoAndButtonsStackView()
-        
         addGradientToBackdropImageView()
         
         addUpdateDetailsObserver()
+        addReloadCastObserver()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
+        backdropImageViewY = backdropImageView.frame.origin.y
+        backdropImageView.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    func createCastCollectionView() {
         
-        // Call for movie details from model id
-        if !movie.hasDetails {
-            print("movie id: \(movie.id)")
-            dimScreenWithActivitySpinner()
-            // Ask data store to call for movie details
-            MADataStore.shared.getMediaDetailsForMovie(movie: movie)
+        let castLabel = UILabel()
+        castLabel.translatesAutoresizingMaskIntoConstraints = false
+        castLabel.text = "Cast"
+        castLabel.font = UIFont.systemFont(ofSize: 17)
+        castLabel.textColor = .white
+        castLabel.frame = CGRect(x: 0, y: 0, width: castLabel.intrinsicContentSize.width, height: castLabel.intrinsicContentSize.height)
+        
+        castContainerView.addSubview(castLabel)
+        
+        castLabel.topAnchor.constraint(equalTo: castContainerView.topAnchor, constant: 8).isActive = true
+        castLabel.leftAnchor.constraint(equalTo: castContainerView.leftAnchor, constant: 8).isActive = true
+        castLabel.rightAnchor.constraint(equalTo: castContainerView.rightAnchor).isActive = true
+        
+        let frame = CGRect.zero
+        
+        let flowlayout = UICollectionViewFlowLayout()
+        flowlayout.scrollDirection = .horizontal
+
+        let castCollectionView = UICollectionView.init(frame: frame, collectionViewLayout: flowlayout)
+        castCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        castCollectionView.showsHorizontalScrollIndicator = false
+        castCollectionView.backgroundColor = .clear
+        
+        castCollectionView.register(CastCollectionViewCell.self, forCellWithReuseIdentifier: Constants.Identifiers.CastCollectionViewCell)
+        
+        castCollectionView.delegate = self
+        castCollectionView.dataSource = self
+    
+        print("collection view frame: \(castCollectionView.frame)")
+
+        castContainerView.addSubview(castCollectionView)
+
+        print(castLabel.bottomAnchor)
+        
+        castCollectionView.topAnchor.constraint(equalTo: castLabel.bottomAnchor, constant: 8).isActive = true
+        castCollectionView.leftAnchor.constraint(equalTo: castContainerView.leftAnchor).isActive = true
+        castCollectionView.rightAnchor.constraint(equalTo: castContainerView.rightAnchor).isActive = true
+        
+        // Plus 50 in height is to allow space for collection view cells to show full picture with name label below
+        castCollectionView.heightAnchor.constraint(equalToConstant: Constants.Dimensions.CollectionViewMovieCellSize.height + 50).isActive = true
+        castContainerView.bottomAnchor.constraint(equalTo: castCollectionView.bottomAnchor, constant: 20).isActive = true
+        
+        print("collection view frame: \(castCollectionView.frame)")
+        
+        self.castCollectionView = castCollectionView
+
+    }
+    
+    @IBAction func button1Tapped(_ sender: UIButton) {
+        print("Button 1 tapped")
+        if let trailerLink = movie.trailerLink  {
+            if let url = URL(string: trailerLink) {
+                let  webVC = UIViewController()
+                
+                let webConfiguration = WKWebViewConfiguration()
+                webView = WKWebView(frame: view.frame, configuration: webConfiguration)
+                
+                let myRequest = URLRequest(url: url)
+                
+                webView.load(myRequest)
+                webVC.view = webView
+                
+                navigationController?.pushViewController(webVC, animated: true)
+            }
         }
     }
-    @IBAction func button1Tapped(_ sender: UIButton) {
-        // TODO: Open trailer link. Are they all on YouTube?
-    }
     @IBAction func button2Tapped(_ sender: UIButton) {
-        // TODO: Open website in Safari. Webview didn't like the redirects
+        // Open website in Safari. Webview didn't like the redirects
+        print("Button 2 tapped")
+        if let link =  movie.websiteLink {
+            if let url = URL(string: link) {
+                UIApplication.shared.open(url)
+            }
+            else {
+                print("Link url failed")
+            }
+        }
+        else {
+            print("no website link ")
+        }
+        
     }
     @IBAction func button3Tapped(_ sender: UIButton) {
-        // TODO: Please for the love of god, add the movie to a list. Any list. 
+        // TODO: Please for the love of god, add the movie to a list. Any list.
+        print("Please for the love of god, add the movie to a list. Any list.")
     }
     
     override func didReceiveMemoryWarning() {
@@ -94,32 +181,23 @@ class MADetailedMovieVC: UIViewController {
             self.updateTitleLabel()
             self.setRatingImage()
             self.updateVotesLabel()
+            
             self.setMoviePosterImage()
             self.updatePlotSummaryTextView()
             self.setBackdropImage()
             
+            self.createCastCollectionView()
             
-            
-//            // see what background image does?
-//            let backgroundContainerView = UIView(frame: self.view.bounds)
-//
-//            let parralaximageView = UIImageView(frame: self.view.bounds)
-//            self.tableViewBackgroundImageView = parralaximageView
-//            parralaximageView.contentMode = .scaleAspectFill
-//            parralaximageView.image = self.movie.backdropImage ?? UIImage(named: Constants.ImageNames.Placeholder)
-//
-//            let gradientVeiw = GradientView(frame: self.view.bounds)
-//            parralaximageView.addSubview(gradientVeiw)
-//
-//            self.tableView.backgroundView = backgroundContainerView
-//            backgroundContainerView.addSubview(parralaximageView)
-//
-//            self.tableViewBackgroundY = self.tableViewBackgroundImageView!.frame.origin.y
-        
-            
+            // TODO: implement this if you want to remove or disable button
 //            self.updateWebsiteLinkButton()
             
             self.undimScreenAndRemoveActivitySpinner()
+        }
+    }
+    
+    @objc private func reloadCast() {
+        DispatchQueue.main.async {
+            self.castCollectionView.reloadData()
         }
     }
     
@@ -209,6 +287,31 @@ class MADetailedMovieVC: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(updateDetailsUI), name: Constants.NotificationNames.UpdateDetailVC, object: nil)
     }
     
+    fileprivate func addReloadCastObserver() {
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadCast), name: Constants.NotificationNames.ReloadCast, object: nil)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // TODO: Fix bug jump sometimes when cast collection view scrolls. Need better check. Tag?
+        if !scrollView.isKind(of: UICollectionView.self) {
+            if let imageView = backdropImageView {
+
+                imageView.translatesAutoresizingMaskIntoConstraints = false
+                
+                let yOffset = scrollView.contentOffset.y
+                print(yOffset)
+                
+
+                imageView.frame.origin.y = backdropImageViewY - (yOffset / 2.0)
+                
+            }
+        }
+        else {
+            // THis is cast collection view scrolling
+        }
+    }
+
+  
     /*
     // MARK: - Navigation
 
@@ -220,3 +323,42 @@ class MADetailedMovieVC: UIViewController {
     */
 
 }
+// MARK: Cast Collection View Extension
+extension MADetailedMovieVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return movie.cast?.count == nil ? 0 : movie.cast!.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.Identifiers.CastCollectionViewCell, for: indexPath) as! CastCollectionViewCell
+        
+        let castMemberDict = movie.cast![indexPath.row] as [String: Any]
+        let name = castMemberDict[Constants.TMDBDictKeys.Name] as! String
+        
+        cell.nameLabel.text = name
+        cell.layoutIfNeeded()
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        return CGSize(width: Constants.Dimensions.CollectionViewMovieCellSize.width, height: Constants.Dimensions.CollectionViewMovieCellSize.height + 50)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        
+        return Constants.Dimensions.CollectionViewMovieEdgeInsets
+    }
+
+}
+

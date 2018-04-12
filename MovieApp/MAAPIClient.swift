@@ -15,12 +15,52 @@ class MAAPIClient: NSObject {
     private var configDict: Dictionary<String, Any>? = nil
     
     
+    func getCreditsForMovieId( _ id: Int, getCreditsCompletionHandler: @escaping(String?, [String : Any]?) -> Void) {
+        guard let url = tmdbCreditsURLForId(id: id, format: .movie) else {
+            getCreditsCompletionHandler("url failed in \(#function)", nil)
+            return
+        }
+        
+        let dataTask = session.dataTask(with: url) { (data, response, error) in
+            guard error == nil else {
+                getCreditsCompletionHandler("Error in \(#function):\n" + error!.localizedDescription, nil)
+                return
+            }
+            guard let status = (response as? HTTPURLResponse)?.statusCode, status > 199 && status < 300 else  {
+                let respCodeInt = (response as? HTTPURLResponse)?.statusCode
+                let respString = respCodeInt == nil ? "nil" : String(describing: respCodeInt)
+                getCreditsCompletionHandler("Status code: " + respString + " unsucessful in \(#function)", nil)
+                return
+            }
+            guard let data = data else {
+                getCreditsCompletionHandler("Nil data in \(#function)", nil)
+                return
+            }
+            
+            // Parse data
+            self.parseJSONData(data, parseDataCompletionHandler: { (parseErrorString, anyObj) in
+                guard parseErrorString == nil else {
+                    getCreditsCompletionHandler("\(parseErrorString!) in \(#function)", nil)
+                    return
+                }
+                guard let castDict = anyObj as? [String: Any] else {
+                    getCreditsCompletionHandler("failed cast in \(#function)", nil)
+                    return
+                }
+                getCreditsCompletionHandler(nil, castDict)
+            })
+        }
+        dataTask.resume()
+        
+    }
+    
     func getVideosForMovieId( _ id: Int, getVideoCompletionHandler: @escaping(String?, [[String : Any]]?) -> Void) {
         
         guard let url = tmdbVideosURLFromParameters(id: id, format: .movie) else {
             getVideoCompletionHandler("URL failed in \(#function)", nil)
             return
         }
+        print(url.absoluteString)
         
         let dataTask = session.dataTask(with: url) { (data, response, error) in
             guard error == nil else {
@@ -440,6 +480,27 @@ class MAAPIClient: NSObject {
         }
     }
     
+    private func tmdbCreditsURLForId(id: Int, format: MediaFormat) -> URL? {
+        
+        var params = [String : String]()
+        params[Constants.TMDB.Parameters.ApiKey] =  Constants.TMDB.ApiKey
+        
+        var components = URLComponents()
+        components.scheme = Constants.TMDB.Scheme
+        components.host = Constants.TMDB.Host
+        components.path = format == MediaFormat.movie ? Constants.TMDB.MoviePath : Constants.TMDB.TVPath
+        components.path += String(id)
+        components.path += "/credits"
+        components.queryItems = [URLQueryItem]()
+        
+        for (key, value) in params {
+            let queryItem = URLQueryItem(name: key, value: value)
+            components.queryItems!.append(queryItem)
+        }
+        
+        return components.url
+    }
+    
     private func tmdbVideosURLFromParameters(id: Int, format: MediaFormat) -> URL? {
         
         var params = [String : String]()
@@ -448,10 +509,9 @@ class MAAPIClient: NSObject {
         var components = URLComponents()
         components.scheme = Constants.TMDB.Scheme
         components.host = Constants.TMDB.Host
-        //TODO: change the path! not discover
         components.path = format == MediaFormat.movie ? Constants.TMDB.MoviePath : Constants.TMDB.TVPath
         components.path += String(id)
-        components.path += "video/"
+        components.path += "/videos"
         components.queryItems = [URLQueryItem]()
         
         for (key, value) in params {

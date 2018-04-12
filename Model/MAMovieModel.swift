@@ -28,7 +28,8 @@ class MAMovieModel: NSObject {
     var plotSummary: String?
     var director: String?
     var duration: Int?
-    var cast: [String: String]?
+    var cast: [[String : Any]]?
+    var genres: [String : Any]?
     
     
     

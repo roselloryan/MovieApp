@@ -115,7 +115,18 @@ struct Constants {
         static let Overview = "overview"
         static let Homepage = "homepage"
         static let Runtime = "runtime"
+        static let VideoType = "type"
+        static let Key = "key"
+        static let Site = "site"
         
+        static let Cast = "cast"
+        static let Crew = "crew"
+    }
+    
+    
+    struct TMDBDictValues {
+        static let Trailer = "Trailer"
+        static let YouTube = "YouTube"
     }
     
     struct NotificationNames {
@@ -123,8 +134,16 @@ struct Constants {
         static let MovieReload = Notification.Name("MovieReloadNotification")
         static let MovieReloadRow = Notification.Name("MovieReloadRowNotification")
         static let MovieReloadRows = Notification.Name("MovieReloadRowsNotification")
+        
         static let Error = Notification.Name("errorNotification")
         static let UpdateDetailVC = Notification.Name("UpdateDetailVC")
+        static let NoVideo = Notification.Name("NoVideo")
+        static let NoCredits = Notification.Name("NoCredits")
+        
+        static let NoCast = Notification.Name("NoCast")
+        static let NoDirector = Notification.Name("NoDirector")
+        static let ReloadCast = Notification.Name("ReloadCast")
+        static let ReloadCastAtRow = Notification.Name("ReloadCastAtRow")
     }
     
     struct ErrorKeys {
@@ -135,6 +154,7 @@ struct Constants {
     struct NotificationKeys {
         static let Row = "row"
         static let Rows = "rows"
+        static let MovieId = "movieId"
     }
     
     struct ImageNames {
@@ -235,8 +255,8 @@ struct Constants {
     struct AttributedText {
         static let GenreCellsTextAttributes = [ NSAttributedStringKey.strokeColor : UIColor.black,
                                                 NSAttributedStringKey.foregroundColor : UIColor.white,
-                                                NSAttributedStringKey.strokeWidth : -2.0,
-                                                NSAttributedStringKey.font : UIFont.systemFont(ofSize: 30)]
+                                                NSAttributedStringKey.strokeWidth : -1.5,
+                                                NSAttributedStringKey.font : UIFont.systemFont(ofSize: 30),]
                                                 as [NSAttributedStringKey : Any]
     }
     

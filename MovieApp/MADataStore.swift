@@ -63,10 +63,75 @@ class MADataStore: NSObject {
             }
             
             // Get video link if exist
+            MAAPIClient.shared.getVideosForMovieId(movie.id, getVideoCompletionHandler: { (errorString, videosArray) in
+                guard errorString == nil else {
+                    // I don't think we need to pass this error to the user. What can they do. Disable the trailer button
+                    print(errorString!)
+                    self.postUpdateNoVideoNotification(movie.id)
+                    return
+                }
+                guard let videosArray = videosArray else {
+                    self.postUpdateNoVideoNotification(movie.id)
+                    return
+                }
+                
+                movie.trailerLink = self.videoLinkFromVideosArrayOfDicts(videosArray)
+            })
             
             
             
-            // Todo: get cast dictionary...
+            // Get cast dictionary.
+            MAAPIClient.shared.getCreditsForMovieId(movie.id, getCreditsCompletionHandler: { (errorString, creditsDict) in
+                guard errorString == nil else {
+                    // I don't think we need to pass this error to the user. What can they do. Disable the credits collectionView
+                    print(errorString!)
+                    self.postNoCreditsNotification(movie.id)
+                    return
+                }
+                guard let creditsDict = creditsDict else {
+                    // I don't think we need to pass this error to the user. What can they do. Disable the credits collectionView
+                    print("Error: nil cast dictionary in \(#function)")
+                    self.postNoCreditsNotification(movie.id)
+                    return
+                }
+                guard let castArray = creditsDict[Constants.TMDBDictKeys.Cast] as? [[String : Any]] else {
+                    print("Error: nil cast dictionary in \(#function)")
+                    self.postNoCastNotification(movie.id)
+                    return
+                }
+                guard let crewArray = creditsDict[Constants.TMDBDictKeys.Crew] as? [[String : Any]] else {
+                    print("Error: nil cast dictionary in \(#function)")
+                    self.postNoDirectorNotification(movie.id)
+                    return
+                }
+                
+                
+                if castArray.count > 0 {
+                    
+                    let end = castArray.count > 10 ? 10 : castArray.count
+                    let topCast = Array(castArray[0..<end])
+                    
+                    movie.cast = topCast
+                    // TODO: Post reload cast collection view with cast placeholder
+                    self.postRelaodCastNotification(movie.id)
+                    
+                    for i in 0..<topCast.count {
+                        // TODO: call for each cast image
+                        print("\(i) cast member")
+                    }
+                }
+                else {
+                    movie.cast = castArray
+                    self.postNoCastNotification(movie.id)
+                }
+                
+                if crewArray.count > 0 {
+                    // TODO: find "director" and attach to movie
+                    
+                }
+            })
+            
+            // TODO: if cast dictionary returned. attach to movie call for cast photos
         
         }
     }
@@ -285,8 +350,39 @@ class MADataStore: NSObject {
         movie.plotSummary = detailsDict[Constants.TMDBDictKeys.Overview] as? String
         movie.duration = detailsDict[Constants.TMDBDictKeys.Runtime] as? Int
         movie.websiteLink = detailsDict[Constants.TMDBDictKeys.Homepage] as? String
+        movie.genres = detailsDict[Constants.TMDBDictKeys.Genres] as? [String : Any]
 
         movie.hasDetails = true
+    }
+    
+    func videoLinkFromVideosArrayOfDicts(_ array: [[String: Any]]) -> String? {
+        
+        for videoDict in array {
+            if videoDict[Constants.TMDBDictKeys.VideoType] as? String == Constants.TMDBDictValues.Trailer &&
+               videoDict[Constants.TMDBDictKeys.Site] as? String == Constants.TMDBDictValues.YouTube &&
+               videoDict[Constants.TMDBDictKeys.Key] != nil {
+                
+                let videoLink = Constants.YouTube.VideoUrlBase + (videoDict[Constants.TMDBDictKeys.Key] as? String ?? "")
+                print("Trailer video link: \(videoLink)")
+                
+                return videoLink
+            }
+        }
+        
+        if array.count > 0 {
+            let firstDict = array.first!
+            if firstDict[Constants.TMDBDictKeys.Site] as? String == Constants.TMDBDictValues.YouTube &&
+                firstDict[Constants.TMDBDictKeys.Key] != nil {
+                
+                let videoLink = Constants.YouTube.VideoUrlBase + (firstDict[Constants.TMDBDictKeys.Key] as? String ?? "")
+                print("No trailer video link: \(videoLink)")
+                
+                return videoLink
+            }
+        }
+        
+        print("No video link found")
+        return nil
     }
     
     // MARK: Convert to Model Methods
@@ -309,7 +405,7 @@ class MADataStore: NSObject {
     
     func placeholderGenreStructs() -> [MAGenreModel] {
         
-        return Array.init(repeating: MAGenreModel.init(id: -1, name: nil), count: 10)
+        return Array(repeating: MAGenreModel.init(id: -1, name: nil), count: 10)
     }
     
     func arrayOfMovieObjectsFromResponseDicts(dict: Dictionary<String, Any>) -> [MAMovieModel]{
@@ -334,6 +430,37 @@ class MADataStore: NSObject {
     
     
     // MARK: - Notification Functions
+    
+    func postRelaodCastAtRowNotification(_ id: Int, row: Int) {
+        let userInfo = [Constants.NotificationKeys.MovieId : id,
+                        Constants.NotificationKeys.Row : row]
+        NotificationCenter.default.post(name: Constants.NotificationNames.ReloadCast, object: nil, userInfo: userInfo)
+    }
+    
+    func postRelaodCastNotification(_ id: Int) {
+        let userInfo = [Constants.NotificationKeys.MovieId : id]
+        NotificationCenter.default.post(name: Constants.NotificationNames.ReloadCast, object: nil, userInfo: userInfo)
+    }
+    
+    func postNoCastNotification(_ id: Int) {
+        let userInfo = [Constants.NotificationKeys.MovieId : id]
+        NotificationCenter.default.post(name: Constants.NotificationNames.NoCast, object: nil, userInfo: userInfo)
+    }
+    
+    func postNoDirectorNotification(_ id: Int) {
+        let userInfo = [Constants.NotificationKeys.MovieId : id]
+        NotificationCenter.default.post(name: Constants.NotificationNames.NoDirector, object: nil, userInfo: userInfo)
+    }
+    
+    func postNoCreditsNotification(_ id: Int) {
+        let userInfo = [Constants.NotificationKeys.MovieId : id]
+        NotificationCenter.default.post(name: Constants.NotificationNames.NoCredits, object: nil, userInfo: userInfo)
+    }
+    
+    func postUpdateNoVideoNotification(_ id: Int) {
+        let userInfo = [Constants.NotificationKeys.MovieId : id]
+        NotificationCenter.default.post(name: Constants.NotificationNames.NoVideo, object: nil, userInfo: userInfo)
+    }
     
     func postUpdateDetailVCNotification() {
         NotificationCenter.default.post(name: Constants.NotificationNames.UpdateDetailVC, object: nil)
