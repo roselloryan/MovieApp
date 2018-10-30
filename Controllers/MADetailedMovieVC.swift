@@ -11,8 +11,6 @@ import WebKit
 
 class MADetailedMovieVC: UIViewController {
     
-    @IBOutlet weak var backdropImageView: UIImageView!
-    
     @IBOutlet weak var scrollView: UIScrollView!
     
     @IBOutlet weak var movieTitleLabel: UILabel!
@@ -34,7 +32,9 @@ class MADetailedMovieVC: UIViewController {
     
     var castCollectionView: UICollectionView!
     
-    var backdropImageViewY: CGFloat = 0.0
+    var backdropContainerView: UIView!
+    var backdropImageView: UIImageView!
+    var backdropContainerViewY: CGFloat = 0.0
     
     var webView: WKWebView!
     
@@ -53,6 +53,8 @@ class MADetailedMovieVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        // Identifies main scroll view for parralax scroll in viewDidScroll
+        scrollView.tag = 101
         
         if !movie.hasDetails {
             print("movie id: \(movie.id)")
@@ -66,7 +68,33 @@ class MADetailedMovieVC: UIViewController {
         setButtonTitles()
         roundButtonsCorners()
         addInsetsForLogoAndButtonsStackView()
+        
+        
+        // Create backdrop methodMETHOD
+    
+        let maxY = navigationController?.navigationBar.frame.maxY
+        let backdropContainerView = UIView(frame: CGRect(x: 0, y: maxY!, width: view.bounds.width, height: view.bounds.height - 2 * maxY!))
+        view.insertSubview(backdropContainerView, at: 0)
+        
+        let backdropImageView = UIImageView()
+        backdropContainerView.addSubview(backdropImageView)
+        backdropImageView.contentMode = .scaleAspectFill
+        backdropImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        backdropImageView.topAnchor.constraint(equalTo: backdropContainerView.topAnchor).isActive = true
+        backdropImageView.leftAnchor.constraint(equalTo: backdropContainerView.leftAnchor).isActive = true
+        backdropImageView.rightAnchor.constraint(equalTo: backdropContainerView.rightAnchor).isActive = true
+        backdropImageView.bottomAnchor.constraint(equalTo: backdropContainerView.bottomAnchor).isActive = true
+        
+        self.backdropContainerView = backdropContainerView
+        self.backdropImageView = backdropImageView
+        
+        self.backdropContainerViewY = backdropContainerView.frame.origin.y
+        
+        
+        
         addGradientToBackdropImageView()
+        
         
         addUpdateDetailsObserver()
         addReloadCastObserver()
@@ -75,8 +103,7 @@ class MADetailedMovieVC: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        backdropImageViewY = backdropImageView.frame.origin.y
-        backdropImageView.translatesAutoresizingMaskIntoConstraints = false
+
     }
     
     func createCastCollectionView() {
@@ -89,7 +116,7 @@ class MADetailedMovieVC: UIViewController {
         castLabel.frame = CGRect(x: 0, y: 0, width: castLabel.intrinsicContentSize.width, height: castLabel.intrinsicContentSize.height)
         
         castContainerView.addSubview(castLabel)
-        
+    
         castLabel.topAnchor.constraint(equalTo: castContainerView.topAnchor, constant: 8).isActive = true
         castLabel.leftAnchor.constraint(equalTo: castContainerView.leftAnchor, constant: 8).isActive = true
         castLabel.rightAnchor.constraint(equalTo: castContainerView.rightAnchor).isActive = true
@@ -103,30 +130,30 @@ class MADetailedMovieVC: UIViewController {
         castCollectionView.translatesAutoresizingMaskIntoConstraints = false
         castCollectionView.showsHorizontalScrollIndicator = false
         castCollectionView.backgroundColor = .clear
+        castCollectionView.tag = 666
         
         castCollectionView.register(CastCollectionViewCell.self, forCellWithReuseIdentifier: Constants.Identifiers.CastCollectionViewCell)
         
         castCollectionView.delegate = self
         castCollectionView.dataSource = self
-    
+
         print("collection view frame: \(castCollectionView.frame)")
 
         castContainerView.addSubview(castCollectionView)
 
         print(castLabel.bottomAnchor)
-        
+    
         castCollectionView.topAnchor.constraint(equalTo: castLabel.bottomAnchor, constant: 8).isActive = true
         castCollectionView.leftAnchor.constraint(equalTo: castContainerView.leftAnchor).isActive = true
         castCollectionView.rightAnchor.constraint(equalTo: castContainerView.rightAnchor).isActive = true
-        
+    
         // Plus 50 in height is to allow space for collection view cells to show full picture with name label below
         castCollectionView.heightAnchor.constraint(equalToConstant: Constants.Dimensions.CollectionViewMovieCellSize.height + 50).isActive = true
         castContainerView.bottomAnchor.constraint(equalTo: castCollectionView.bottomAnchor, constant: 20).isActive = true
-        
+    
         print("collection view frame: \(castCollectionView.frame)")
-        
+    
         self.castCollectionView = castCollectionView
-
     }
     
     @IBAction func button1Tapped(_ sender: UIButton) {
@@ -195,9 +222,13 @@ class MADetailedMovieVC: UIViewController {
         }
     }
     
-    @objc private func reloadCast() {
-        DispatchQueue.main.async {
-            self.castCollectionView.reloadData()
+    @objc private func reloadCast(notification: Notification) {
+        if let userInfo = notification.userInfo, let movieId = userInfo[Constants.NotificationKeys.MovieId] as? Int {
+            if movieId == movie.id {
+                DispatchQueue.main.async {
+                    self.castCollectionView.reloadData()
+                }
+            }
         }
     }
     
@@ -249,11 +280,8 @@ class MADetailedMovieVC: UIViewController {
     }
     
     fileprivate func addGradientToBackdropImageView() {
-        let gradientVeiw = GradientView(frame: self.view.bounds)
+        let gradientVeiw = GradientView(frame: self.backdropImageView.bounds)
         backdropImageView.addSubview(gradientVeiw)
-        
-//        self.tableView.backgroundView = backgroundContainerView
-//        backgroundContainerView.addSubview(tableViewImageView)
     }
     
     fileprivate func setMoviePosterImage() {
@@ -288,22 +316,19 @@ class MADetailedMovieVC: UIViewController {
     }
     
     fileprivate func addReloadCastObserver() {
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadCast), name: Constants.NotificationNames.ReloadCast, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadCast(notification:)), name: Constants.NotificationNames.ReloadCast, object: nil)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        // TODO: Fix bug jump sometimes when cast collection view scrolls. Need better check. Tag?
-        if !scrollView.isKind(of: UICollectionView.self) {
-            if let imageView = backdropImageView {
-
-                imageView.translatesAutoresizingMaskIntoConstraints = false
+        // Tag to differentiate between main scroll view and cast collection view
+        print(scrollView.tag)
+        if scrollView.tag == 101 {
+            
+            print(scrollView.tag)
+            if let containerView = backdropContainerView {
                 
                 let yOffset = scrollView.contentOffset.y
-                print(yOffset)
-                
-
-                imageView.frame.origin.y = backdropImageViewY - (yOffset / 2.0)
-                
+                containerView.frame.origin.y = backdropContainerViewY - (yOffset / 2.0)
             }
         }
         else {
@@ -341,7 +366,7 @@ extension MADetailedMovieVC: UICollectionViewDelegate, UICollectionViewDataSourc
         let name = castMemberDict[Constants.TMDBDictKeys.Name] as! String
         
         cell.nameLabel.text = name
-        cell.layoutIfNeeded()
+        //        cell.layoutIfNeeded() // TODO: Does this need to be called?
         
         return cell
     }

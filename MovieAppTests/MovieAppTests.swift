@@ -5,7 +5,6 @@
 //  Created by RYAN ROSELLO on 2/15/18.
 //  Copyright © 2018 RYAN ROSELLO. All rights reserved.
 //
-
 import XCTest
 @testable import MovieApp
 
@@ -20,10 +19,10 @@ class MovieAppTests: XCTestCase {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        movieVC = storyboard.instantiateViewController(withIdentifier: Constants.Identifiers.MAMovieVCStoryboardIdentifier) as! MAMoviesVC
+        movieVC = (storyboard.instantiateViewController(withIdentifier: Constants.Identifiers.MAMovieVCStoryboardIdentifier) as! MAMoviesVC)
         
         //FilterTableVC
-        filterVC = storyboard.instantiateViewController(withIdentifier: "FilterTableVC") as! MAFiltersTableVC
+        filterVC = (storyboard.instantiateViewController(withIdentifier: "FilterTableVC") as! MAFiltersTableVC)
         
     }
     
@@ -46,10 +45,10 @@ class MovieAppTests: XCTestCase {
         
         print(filterVC.tableView.numberOfSections)
         print(filterVC.tableView.numberOfRows(inSection: 0))
-//        print(filterVC.tableView.cellForRow(at: IndexPath(row: 0, section: 0)))
-//        print(filterVC.tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.textLabel?.text)
-//        let cell = filterVC.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! MAFilterTableViewCell
-//        print("cell.textLabel.text = \(cell.textLabel?.text ?? "nil text")")
+        //        print(filterVC.tableView.cellForRow(at: IndexPath(row: 0, section: 0)))
+        //        print(filterVC.tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.textLabel?.text)
+        //        let cell = filterVC.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! MAFilterTableViewCell
+        //        print("cell.textLabel.text = \(cell.textLabel?.text ?? "nil text")")
     }
     
     func testPerformanceExample() {

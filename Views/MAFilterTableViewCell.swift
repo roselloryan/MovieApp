@@ -104,7 +104,9 @@ class MAFilterTableViewCell: UITableViewCell {
       
         let imageName: String!
         
-        switch self.cellState {
+        guard let cellState = self.cellState else { fatalError("Something wrong in cell state table view cell \(#function)") }
+        
+        switch cellState {
         case .unselected:
             imageName = Constants.ImageNames.Unselected
         case .selected:
@@ -113,8 +115,6 @@ class MAFilterTableViewCell: UITableViewCell {
             imageName = Constants.ImageNames.UpChevron
         case .pointingDown:
             imageName = Constants.ImageNames.DownChevron
-        default:
-            fatalError("Something wrong in cell state table view cell \(#function)")
         }
         
         DispatchQueue.main.async { [unowned self] in

@@ -80,7 +80,7 @@ class MADataStore: NSObject {
             
             
             
-            // Get cast dictionary.
+            // Get cast dictionary. // TODO: Should this be it's own method?
             MAAPIClient.shared.getCreditsForMovieId(movie.id, getCreditsCompletionHandler: { (errorString, creditsDict) in
                 guard errorString == nil else {
                     // I don't think we need to pass this error to the user. What can they do. Disable the credits collectionView
@@ -112,7 +112,7 @@ class MADataStore: NSObject {
                     let topCast = Array(castArray[0..<end])
                     
                     movie.cast = topCast
-                    // TODO: Post reload cast collection view with cast placeholder
+                    
                     self.postRelaodCastNotification(movie.id)
                     
                     for i in 0..<topCast.count {

@@ -31,7 +31,7 @@ extension UIViewController {
             self.view.addSubview(dimmedView)
             
             // Add activity indicator
-            let spinnerView = UIActivityIndicatorView.init(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
+            let spinnerView = UIActivityIndicatorView.init(style: UIActivityIndicatorView.Style.whiteLarge)
             spinnerView.tag = 1
             spinnerView.center = CGPoint(x: self.view.center.x, y: self.view.center.y - self.navigationController!.navigationBar.frame.height)
             self.view.addSubview(spinnerView)

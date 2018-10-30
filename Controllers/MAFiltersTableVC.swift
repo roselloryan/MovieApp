@@ -366,7 +366,7 @@ class MAFiltersTableVC: UITableViewController {
     // MARK: - Custom Table View methods
     
     func updateSortByCellUIWithSelctionAtIndexPath(_ indexPath: IndexPath) {
-        
+        // TODO: Fix crash at forced unwrapping here.
         let oldSelectedCell = (tableView.cellForRow(at: IndexPath(row: sortRowSelected, section: indexPath.section)) as! MAFilterTableViewCell)
         let newSelectedCell = (tableView.cellForRow(at: indexPath) as! MAFilterTableViewCell)
         

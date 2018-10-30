@@ -253,11 +253,11 @@ struct Constants {
     }
     
     struct AttributedText {
-        static let GenreCellsTextAttributes = [ NSAttributedStringKey.strokeColor : UIColor.black,
-                                                NSAttributedStringKey.foregroundColor : UIColor.white,
-                                                NSAttributedStringKey.strokeWidth : -1.5,
-                                                NSAttributedStringKey.font : UIFont.systemFont(ofSize: 30),]
-                                                as [NSAttributedStringKey : Any]
+        static let GenreCellsTextAttributes = [ NSAttributedString.Key.strokeColor : UIColor.black,
+                                                NSAttributedString.Key.foregroundColor : UIColor.white,
+                                                NSAttributedString.Key.strokeWidth : -1.5,
+                                                NSAttributedString.Key.font : UIFont.systemFont(ofSize: 30),]
+                                                as [NSAttributedString.Key : Any]
     }
     
 }

@@ -27,7 +27,7 @@ class CastCollectionViewCell: UICollectionViewCell {
     
     func buildCellUI() {
         
-        let imageView = UIImageView(image: UIImage(named:"CastImage"))
+        let imageView = UIImageView(image: UIImage(named:"CastPlaceholder"))
         imageView.contentMode = .scaleAspectFill
         
         castImageView = imageView

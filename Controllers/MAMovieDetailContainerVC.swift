@@ -15,10 +15,10 @@ class MAMovieDetailContainerVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(self.childViewControllers)
+        print(self.children)
         
-        if movie != nil && childViewControllers.first != nil {
-            (childViewControllers.first as! MAMovieDetailTableVC).movie = movie
+        if movie != nil && children.first != nil {
+            (children.first as! MAMovieDetailTableVC).movie = movie
         }
     }
 
